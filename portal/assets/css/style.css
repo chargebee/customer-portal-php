@@ -1,0 +1,923 @@
+/**
+ * Bootrstrap version 3.1.0
+ * NOTE: Some of the Twitter Bootstrap's default style classes are modified to match with the theme.
+
+#cb-wrapper-ssp                         //customer portal
+|-- #cb-user-content                    //portal login,edit,change subscription forms
+    |-- #cb-payment-method
+    |-- #cb-payment-method-type
+    |-- #cb-payment-wrapper
+|-- #cb-content                         //portal details
+
+**/
+
+/*google fonts import*/
+@import url(https://fonts.googleapis.com/css?family=Roboto|Lato);
+
+/*****************************************************************************
+ Bootstrap style overridden for Portal.
+ *****************************************************************************/
+
+/* Body*/
+body {
+    font-size:13px;
+    color:#000000;
+    font-family:Roboto,Helvetica Neue, Helvetica, Arial, sans-serif;
+    background:#ffffff ;
+}
+strong{
+    font-weight: normal;
+}
+/* Horizontal line */
+hr{
+    border-color:#D4D4D4;
+}
+
+/* hyperlink */
+a,
+.btn-link{
+    cursor:pointer;
+    color:#453A59;
+}
+a:hover,
+.btn-link:hover,
+.btn-link:focus{
+    color:#352d45;
+}
+
+/* Form field label */
+label{
+    font-weight:normal;
+    color:#000000;
+}
+
+/* Heading*/
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family:Lato,Helvetica Neue, Helvetica, Arial, sans-serif;
+    color:#000000;
+}
+
+/*Portal billing and shipping address details*/
+address{
+    margin-bottom:0;
+}
+
+/* Form field error message color*/
+.text-danger,
+a.text-danger:hover {
+    color:#f00f00;
+}
+a.text-danger:hover{
+    opacity: .8;
+}
+
+.row,
+.navbar > .container > .navbar-header,
+.navbar > .container > .navbar-collapse,
+.form-horizontal .form-group{
+    margin-left: -8px;
+    margin-right: -8px;
+}
+
+.container, .navbar-brand, .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+/* Wrapper element (All the columns are wrapped inside this element) */
+.container {
+    max-width:816px;
+}
+
+/* Contains form label, input element(textbox/textarea/selectbox), error message */
+.form-group {
+    margin-bottom: 7px;
+}
+
+/*input and button*/
+.form-control,
+.form-control:focus,
+.input-group-addon,
+.btn,
+.btn:focus {
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    outline: none;
+}
+
+/* input element and input with addon element */
+.form-control,
+.input-group-addon {
+    font-size: 13px;
+    box-shadow:none;
+    -moz-box-shadow:none;
+    -webkit-box-shadow:none;
+    background:#ffffff;
+    border-color:#D6D3CE;
+    color:#000000;
+}
+.form-control:focus {
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    background:#ffffff;
+    border-color:#352d45;
+}
+.form-control[disabled] + .input-group-addon,
+.form-control[readonly] + .input-group-addon {
+    background: #EEE;
+    cursor: not-allowed;
+}
+.btn-default,
+.btn-primary,
+.btn-danger{
+    text-decoration: none!important;
+}
+.btn-primary,
+.btn-danger {
+    font-size: 16px;
+    padding-left: 35px;
+    padding-right: 35px;
+}
+.btn-default,
+.btn-default:hover,
+.btn-default:focus,
+.btn-default[disabled],
+.btn-default[disabled]:hover,
+.btn-default[disabled]:focus{
+    background:#db4956;
+    border-color:#db4956;
+    color:#FFFFFF;
+}
+
+/*Used on main form submit*/
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary[disabled],
+.btn-primary[disabled]:hover,
+.btn-primary[disabled]:focus{
+    background:#db4956;
+    border-color:#db4956;
+    color:#FFFFFF;
+}
+
+/*Used on cancel subscription form*/
+.btn-danger,
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger[disabled],
+.btn-danger[disabled]:hover,
+.btn-danger[disabled]:focus{
+    background:#d9534f;
+    border-color:#d9534f;
+    color:#FFFFFF;
+}
+.btn-default:hover,
+.btn-primary:hover,
+.btn-danger:hover{
+    box-shadow: inset 0 -150px 0 rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: inset 0 -150px 0 rgba(0, 0, 0, 0.07);
+    -webkit-box-shadow: inset 0 -150px 0 rgba(0, 0, 0, 0.07);
+}
+/*Block level help text for form fields.*/
+.help-block {
+    color:#999999;
+}
+/*Date picker on custom field*/
+.input-group.date{
+    width:100%;
+}
+
+/*table*/
+.table-hover>tbody>tr:hover>td,
+.table-hover>tbody>tr:hover>th{
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+/*Used on portal's details page*/
+.control-label {
+    color:#868686;
+}
+
+/*Used on the details page show static content*/
+.form-horizontal .control-label,
+.form-horizontal .form-control-static{
+    word-wrap: break-word;
+}
+
+/*Account dropdown navigation*/
+.navbar-collapse > .navbar-nav a{
+    color:#FFFFFF;
+}
+/*Account dropdonw toggle*/
+.navbar-collapse > .navbar-nav > .dropdown,
+.navbar-toggle{
+    font-size:13px;
+    font-family:arial,sans-serif;
+    margin:0;
+    margin-top: 10px;
+}
+/*Account dropdown toggle link*/
+.navbar-collapse > .navbar-nav > .dropdown > a{
+    min-width: 135px;
+    padding: 5px 10px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    color:#FFFFFF;
+    border:2px solid #FFFFFF;
+}
+.navbar-collapse > .navbar-nav > .dropdown > a:focus{
+    background: none;
+}
+.navbar-collapse > .navbar-nav a:hover,
+.navbar-collapse > .navbar-nav > .dropdown > a:hover,
+.navbar-collapse > .navbar-nav > .dropdown.open > a,
+.nav .open > a,
+.nav .open > a:hover,
+.nav .open > a:focus{
+    color:#453A59;
+    background:#F5F5F5;
+    border-color:#F5F5F5;
+}
+.navbar-collapse > .navbar-nav > .dropdown.open > a{
+    box-shadow: 0 2px 12px rgba(0,0,0,.175);
+    -moz-box-shadow: 0 2px 12px rgba(0,0,0,.175);
+    -webkit-box-shadow: 0 2px 12px rgba(0,0,0,.175);
+}
+/*Account dropdown menu*/
+.navbar-collapse  .navbar-nav .dropdown-menu{
+    border: none;
+    min-width: 135px;
+    margin-top: -3px;
+    background:#F5F5F5;
+}
+/*Account dropdown menu links*/
+.navbar-collapse .navbar-nav .dropdown-menu a{
+    font-size:13px;
+    padding:3px 10px;
+    color: #453A59;
+}
+.navbar-collapse .navbar-nav a:hover{
+    background:#453A59;
+    color:#F5F5F5;
+}
+.nav .caret{
+    border-top-color:#FFFFFF;
+    border-bottom-color:#FFFFFF;
+}
+.nav a:hover .caret,
+.nav .open > a .caret,
+.nav .open > a:hover .caret,
+.nav .open > a:focus .caret{
+    border-top-color:#453A59;
+    border-bottom-color:#453A59;
+}
+
+/*Account dropdown menu icon on mobile*/
+.navbar-toggle .icon-bar{
+    background:#FFFFFF;
+}
+
+/*Header used on portal's details page*/
+.page-header{
+    border-color:#e3e3e3;
+}
+
+/*Merge the header and invoice table*/
+.page-header + .table,
+#cb-portal-invoice-table{
+    margin-top:-10px;
+}
+
+/*Alert messages*/
+.alert{
+    background: transparent;
+    border-radius:0;
+    -moz-border-radius:0;
+    -webkit-border-radius:0;
+    border-left-width:3px;
+    margin-bottom: 10px;
+}
+
+/*Centred the alert messages.*/
+.text-center  > .alert{
+    display:inline-block;
+}
+
+/*Info alert message*/
+.alert-info{
+    border-color:#79acc1;
+    color:#72a2b6;
+}
+
+/*Warning alert message*/
+.alert-warning{
+    border-color:#d59e18;
+    color:#e8ba49;
+}
+
+/*Test cards dropdown list*/
+.dropdown-menu.panel{
+    border:1px solid #D6D3CE;
+}
+
+/*************************************************************
+ Header and footer
+**************************************************************/
+/* Header*/
+.navbar-static-top{
+    background:#352d45;
+    color:#FFFFFF;
+}
+
+/* Brand Logo/Text*/
+.navbar-static-top .navbar-brand {
+    height:auto;
+    color:#FFFFFF;
+    font-family:Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+
+/* Footer*/
+.navbar-static-bottom {
+    line-height: 23px;
+    padding: 15px 0;
+    margin: 0;
+    border-radius: 0;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    text-align: center;
+    color:#FFFFFF;
+    background:#352d45;
+}
+
+/**
+ * Portal  - You could customize the style according to your preference using the below function.
+ **/
+
+/* border dashed for any element which has this class */
+.dashed {
+    border-style: dashed;
+}
+
+/*
+ * #cb-wrapper-ssp holds the content of portal
+ */
+#cb-wrapper-ssp{
+    margin-bottom: 30px;
+    position: relative;
+}
+
+/*Headings on section*/
+#cb-wrapper-ssp h3,
+#cb-wrapper-ssp .page-header{
+    margin:0 0 9px;
+}
+#cb-content h3,
+#cb-content h4{
+    margin:0;
+}
+/*Horizontal line*/
+#cb-wrapper-ssp hr,
+.cb-well hr{
+    margin: 7px 0;
+    border-color:#e3e3e3;
+}
+
+/*"cb-well" class is used for the purpose of background and border colours as well as spacing. We recommend you to not override the class unless required.*/
+.cb-well{
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    margin-bottom: 15px;
+    padding:15px;
+    background-color:#F5F5F5;
+    border: 1px solid #e3e3e3;
+}
+
+.cb-well a{
+    text-decoration:underline;
+}
+
+#cb-wrapper-ssp hr{
+    border-style:dashed;
+}
+
+/*#cb-handle-progress handles the alert messages as well as the loading shown on top of the page*/
+#cb-handle-progress{
+    position:relative;
+}
+
+/*Basic alerts in bootstrap are overridden to show flash message*/
+.cb-alert-flash{
+    text-align: center;
+    z-index: 999;
+    position: fixed;
+    left: 0;
+    right: 0;
+}
+
+.cb-alert-flash .alert,
+.cb-alert-flash .loader{
+    background:#fff;
+    border:1px solid #ddd;
+    display: inline-block;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    box-shadow:0 0 10px 0 rgba(0, 0, 0, 0.05);
+    -moz-box-shadow:0 0 10px 0 rgba(0, 0, 0, 0.05);
+    -webkit-box-shadow:0 0 10px 0 rgba(0, 0, 0, 0.05);
+    padding:4px 8px;
+}
+
+.cb-alert-flash .alert-success{
+    color:#69ad22;
+}
+
+.cb-alert-flash .alert-warning{
+    color:#e8ba4a;
+}
+
+.cb-alert-flash .alert-danger{
+    color:#cc3335;
+}
+
+.cb-alert-flash .alert .glyphicon{
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.cb-alert-flash .loader .cb-process{
+    padding:1px 12px;
+}
+
+/*Subscripiton status*/
+.cb-subscription-status{
+    padding: 1px 6px;
+    font-size: 12px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    position: relative;
+    margin: 0 3px;
+    display: inline-block;
+    font-family: Roboto,Helvetica Neue, Helvetica, Arial, sans-serif;
+    color: #ffffff;
+}
+
+/*Subscripiton status future*/
+.cb-subscription-status.future{
+    background:#91388c;
+}
+
+/*Subscripiton status in trial*/
+.cb-subscription-status.in_trial{
+    background:#e8ba4a;
+}
+
+/*Subscripiton status active*/
+.cb-subscription-status.active{
+    background:#69ad22;
+}
+
+/*Subscripiton status non renewing*/
+.cb-subscription-status.non_renewing{
+    background:#555f78;
+}
+
+/*Subscripiton status cancelled*/
+.cb-subscription-status.cancelled{
+    background:#cc3335;
+}
+
+/*#cb-user-content holds the forms(login,signup,change password,manage subscription,account,billing) in edit pages.*/
+#cb-user-content{
+    margin-left:auto;
+    margin-right:auto;
+    max-width:500px;
+}
+
+/* List of subscriptions in your accounts*/
+.cb-subscription-manage dl{
+    padding:12px 0;
+    margin:0;
+}
+
+.cb-subscription-manage dl + dl{
+    border-top:1px dashed #e3e3e3;
+}
+
+.cb-subscription-manage dt,
+.cb-subscription-manage dd{
+    padding:0;
+    font-weight: normal;
+}
+
+/*Ordered list on portal's details page*/
+.cb-subscribed-items li{
+    padding:7px 0;
+    border-bottom:1px dashed #e3e3e3;
+}
+
+/*Order total on the details page*/
+.cb-subscribed-total{
+    font-size:16px;
+    margin-left:10px;
+}
+
+/*Payment invoice table on the details page*/
+#cb-portal-invoice-table{
+    border-top:1px solid #e3e3e3;
+    border-bottom:1px solid #e3e3e3;
+}
+
+#cb-portal-invoice-table td{
+    white-space:nowrap;
+    border-color:#e3e3e3;
+}
+
+/*glyphicon*/
+#cb-content .page-header a .glyphicon,
+#cb-portal-invoice-table .glyphicon{
+    margin:0 5px;
+}
+
+/*Invoice success color*/
+#cb-portal-portal-invoices .text-success{
+    color:#69ad22;
+}
+
+/*Invoice payment due color*/
+#cb-portal-portal-invoices .text-warning{
+    color:#e8ba4a;
+}
+
+/*Invoice Not paid color*/
+#cb-portal-portal-invoices .text-danger{
+    color:#cc3335;
+}
+
+/******************************
+ Change subscription
+ *****************************/
+/*Change subscription - header*/
+.cb-product-header{
+    margin: -15px -15px 10px -15px;
+    padding: 5px;
+    border-radius: 5px 5px 0 0;
+    -moz-border-radius: 5px 5px 0 0;
+    -webkit-border-radius: 5px 5px 0 0;
+    border-bottom:1px solid #e3e3e3;
+}
+/*Change subscription - wizard in header*/
+.cb-product-steps{
+    display: table;
+    width: 100%;
+    font-size:12px;
+}
+.cb-product-step{
+    padding: 10px;
+    padding-left:20px;
+    position: relative;
+    display: table-cell;
+    text-align:center;
+    border: 1px solid #e3e3e3;
+    background: #F5F5F5;
+}
+.cb-product-step:first-child{
+    padding-left: 10px;
+    border-radius: 5px 0 0 5px;
+    -moz-border-radius: 5px 0 0 5px;
+    -webkit-border-radius: 5px 0 0 5px;
+}
+.cb-product-step:last-child{
+    border-radius: 0 5px 5px 0;
+    -moz-border-radius: 0 5px 5px 0;
+    -webkit-border-radius: 0 5px 5px 0;
+}
+/*Change subscription - wizard arrow*/
+.cb-product-step:before,
+.cb-product-step:after{
+    content: '';
+    position: absolute;
+    right: -15px;
+    bottom: 0;
+    width: 0;
+    height: 0;
+    z-index: 5;
+    top: 0;
+    margin:auto;
+    border-top: 18px solid transparent;
+    border-bottom: 19px solid transparent;
+    border-left: 15px solid #F5F5F5;
+}
+.cb-product-step:after{
+    right: -16px;
+    z-index: 4;
+    border-left-color:#e3e3e3;
+}
+.cb-product-step:last-child:before,
+.cb-product-step:last-child:after{
+    border:none;
+}
+/*Change subscription - previous wizards are completed  and they are editable*/
+.cb-product-step.done.active{
+    cursor:pointer;
+    color:#352d45;
+    background:#ffffff;
+}
+.cb-product-step.active.done:before{
+    border-left-color:#ffffff;
+}
+/*Change subscription - changes being made to the current wizard*/
+.cb-product-step.current{
+    pointer-events:none;
+    cursor: default;
+    background:#352d45;
+    color:#ffffff;
+}
+.cb-product-step.current:before{
+    border-left-color:#352d45;
+}
+/*Change subscription - The next wizard can only be accessed after completion of the current wizard.*/
+.cb-product-step.future.disabled{
+    pointer-events:none;
+    cursor: default;
+    background: #e3e3e3;
+}
+.cb-product-step.future.disabled:after{
+    border-left-color: #F5F5F5;
+}
+.cb-product-step.future.disabled:before{
+    border-left-color: #e3e3e3;
+}
+
+/*
+ * Change subscription - Lists of products that have been selected.
+ */
+.cb-product-box{
+    padding:10px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    margin-bottom:15px;
+    background-color:#ffffff;
+    border:1px solid #e3e3e3;
+}
+.cb-product-box hr{
+    border-style:solid!important;
+}
+.cb-product-title{
+    font-size:16px;
+    font-weight: bold;
+}
+.cb-product-item{
+    padding-top:5px;
+    padding-bottom:5px;
+}
+.cb-product-list ~ .cb-product-title{
+    margin-top:20px;
+}
+/*Current product's grand total*/
+.cb-product-grand-total{
+    font-size:16px;
+    font-weight: bold;
+}
+/*
+ * Change subscription - products that are available for selection.
+ */
+.cb-available-list{
+    max-height:400px;
+    overflow-y:auto;
+    margin-bottom:15px;
+}
+.cb-available-list .radio,
+.cb-available-list .checkbox{
+    margin-top:7px;
+    margin-bottom:7px;
+}
+/*Highlight the selected product(s)*/
+.cb-has-select .cb-available-item{
+    padding:0 7px;
+    margin:3px 0;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border:2px solid transparent;
+}
+.cb-available-item.selected{
+    border-color:#e3e3e3;
+}
+/*Select the product quantity field*/
+.cb-available-pick .form-control{
+    height: auto;
+    padding: 0;
+    padding-left : 5px;
+    margin: 0 5px;
+    width: 40px;
+    display: inline;
+    min-height: 1px;
+}
+/*The selected product price*/
+.cb-available-pick-price{
+    width:65px;
+    display:inline-block;
+}
+/*Shown only if the product quantity is present (for mobile alone)*/
+.cb-available-pick .form-control + .cb-available-pick-price{
+    text-align: right;
+}
+/*
+ * Media queries to assign different styles depending on the window size of the browser.
+ */
+@media (min-width: 768px) {
+    .navbar > .container .navbar-brand {
+        margin-left:0;
+        padding-left:0;
+    }
+    .navbar > .container > .navbar-header,
+    .navbar > .container > .navbar-collapse ,
+    .navbar-nav.navbar-right:last-child{
+        margin-left:0;
+        margin-right:0;
+    }
+    /* Space between the fields*/
+    .form-inline .form-group ~ .form-group {
+        margin-left: 8px;
+    }
+    #cb-handle-progress{
+        min-height: 50px;
+    }
+    .cb-subscription-status{
+        top:-4px;
+    }
+    /* Portal details page heading with links(edit,add).
+       Change subscription wizard navigations(previous, next)*/
+    .cb-well .page-header a,
+    .cb-step-nav{
+        margin-top:7px;
+        float:right;
+    }
+    /*logout link for api*/
+    .cb-api-logout,
+    .cb-api-logout:hover{
+        background:none!important;
+        text-decoration:underline!important;
+        margin-top:2px;
+        color:#FFFFFF!important;
+    }
+    /*Invoice table description*/
+    .cb-portal-invoice-desc{
+        max-width:250px;
+        display:inline-block;
+        white-space: normal;
+    }
+    /*Invoice table details*/
+    .cb-portal-invoice-details{
+        margin-left:13px;
+    }
+    /*Change subscription product total*/
+    .cb-product-total,
+    .cb-available-pick{
+        text-align:right;
+    }
+    /*Change subscription available product has qty*/
+    .cb-avail-has-qty .radio label,
+    .cb-avail-has-qty .checkbox label{
+        float:left;
+        max-width:250px;
+    }
+}
+@media (max-width: 767px) {
+    h1, h2, h3, .h1, .h2, .h3 {
+        font-size: 20px;
+        margin-top: 10px;
+    }
+    .form-control,
+    .btn,
+    .input-group-addon{
+        min-height: 40px;
+    }
+    .center-xs {
+        float: none !important;
+        clear: both;
+        text-align: center;
+        display: block;
+    }
+    .center-xs + .center-xs {
+        margin-top: 7px;
+    }
+    /*Portal details page and edit page with account dropdown. So, the logo should always be aligned towards the left.*/
+    .navbar-static-top .navbar-header.pull-left{
+        float: none!important;
+    }
+    .navbar-static-top .navbar-header.pull-left .navbar-brand {
+        max-width: 250px;
+        float: left;
+        text-align: left;
+    }
+    /*Making links as button, so it's easy on touch*/
+    .cb-well .page-header a,
+    .cb-step-nav a{
+        padding: 2px 7px;
+        border-radius: 20px;
+        -moz-border-radius: 20px;
+        -webkit-border-radius: 20px;
+        text-decoration: none;
+        display: inline-block;
+        border: 1px solid #453A59;
+    }
+    .cb-well .page-header a:hover,
+    .cb-step-nav a:hover{
+        border-color:#352d45;
+        background:#352d45;
+        color:#F5F5F5;
+    }
+    .cb-well .page-header a,
+    .cb-nav-next{/*Change subscription wizard previous step*/
+        float:right;
+    }
+    .cb-main-footer .form-inline .form-group .btn,
+    #cb-wrapper-ssp .form-inline .form-group .btn,
+    #cb-user-content form .cb-step-nav + .clearfix .btn,/*change subscription in portal*/
+    #cb-user-content form .cb-step-nav + .clearfix a,
+    #cb-user-content form .form-group + .text-center a,/*change password in portal*/
+    #cb-payment-wrapper .form-inline .form-group .btn{
+        margin-bottom: 15px;
+        display: block;
+        width: 100%;
+    }
+    .cb-main-footer .form-inline .form-group a.btn,
+    #cb-wrapper-ssp .form-inline .form-group a.btn,
+    #cb-user-content form .cb-step-nav + .clearfix a,
+    #cb-user-content form .form-group + .text-center a{
+        text-decoration: none;
+        min-height: 40px;
+        padding: 10px;
+        line-height: 1;
+        border-radius: 2px;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+        border: 2px solid #453A59;
+    }
+    /*progress loader, fixed at the bottom of viewport*/
+    #cb-handle-progress .loader{
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        background-color: #FFF;
+        color: #000;
+        line-height: 18px;
+        padding: 15px;
+        border-width:0;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        -webkit-box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+    #cb-portal-invoice-table td {
+        display: block;
+        border: none;
+        text-align: right;
+        padding:5px;
+    }
+    #cb-portal-invoice-table td[data-cb-invoice]:before {
+        content: attr(data-cb-invoice);
+        float: left;
+        color:#868686;
+    }
+    #cb-portal-invoice-table td:last-child{
+        border-bottom:1px solid #e3e3e3!important;
+    }
+    /*Invoice prev/next link as button*/
+    .cb-portal-invoice-details span.text-muted,
+    .cb-portal-invoice-details a{
+        padding: 3px 10px;
+        font-size: 13px;
+        border-radius: 20px;
+        border: 1px solid transparent;
+        text-decoration: none;
+    }
+    .cb-portal-invoice-details span.text-muted{
+        border-color:#999999;
+        background:#999999;
+        color:#F5F5F5;
+    }
+    .cb-portal-invoice-details a{
+        border-color: #453A59;
+    }
+    .cb-portal-invoice-details a:hover{
+        border-color: #352d45;
+        background:#352d45;
+        color:#F5F5F5;
+    }
+    .cb-portal-invoice-details .center-xs + .center-xs{
+        margin-top: 30px;
+    }
+    .cb-available-pick{
+        margin-top:10px;
+    }
+}
