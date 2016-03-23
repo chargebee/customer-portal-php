@@ -1,4 +1,4 @@
-    <?php
+<?php
 
 class ChargeBee_APIError extends Exception {
 
