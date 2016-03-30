@@ -1,6 +1,5 @@
 <?php
-$planResult = $servicePortal->retrievePlan($subscription->planId);
-$currentPlanDetails = $planResult->plan();
+$currentPlanDetails = $servicePortal->retrievePlan($subscription->planId);
 if ($subscription->status == 'non_renewing' && $subscription->currentTermEnd < time()) {
     $estimate = array();
 } else {
@@ -97,7 +96,8 @@ if ($subscription->status == "future") {
 
 
 <div class="text-right">
-    <span class="text-muted"><?php 
+    <span class="text-muted">
+		<?php 
         $phrase = $infoconfigData['Timeline']['Recurring_charge'];
         $default = array('$planperiod', '$planunit');
         $assign   = array($currentPlanDetails->period, $currentPlanDetails->periodUnit);

@@ -32,35 +32,41 @@ if(isset($nonGroupPlans)){ ?>
             <div class='cb-available-item cb-avail-has-qty' data-cb="cb-available-item">
                 <div class='radio'>
                     <label>
-                        <input type='radio' name='plan_id' 
-							id='plan.id.<?php echo esc($plan->id) ?>' value="<?php echo esc($plan->id) ?>" validate="true" 
+                        <input type='radio' name='plan_id'  id='plan.id.<?php echo esc($plan->id) ?>' 
+								data-plan-id="<?php echo esc($plan->id) ?>" value="<?php echo esc($plan->id) ?>" validate="true" 
 							<?php echo ($curPlan == $plan->id ) ? "checked" : "" ?> > 
-							<?php echo esc($plan->name) ?>                          
+							<?php echo esc(isset($plan->invoiceName) ? $plan->invoiceName : $plan->name) ?>                          
                     </label>
 
                     <div class="cb-available-pick">
-                        <?php if ($settingconfigData[changesubscription][planqty] == 'true' && $settingconfigData[changesubscription][allow] == 'true' && $plan->chargeModel == 'per_unit') { ?>
+                        <?php if ($settingconfigData["changesubscription"]["planqty"] == 'true' && $settingconfigData["changesubscription"]["allow"] == 'true' && $plan->chargeModel == 'per_unit') { ?>
                             <span>Qty</span>
-                            <input type="number" validate="true" class="form-control"  id="plan_quantity_<?php echo esc($plan->id) ?>"
+                            <input type="number" validate="true" class="form-control"  
+										data-plan-quantity="<?php echo esc($plan->id) ?>"
 										name="plan_quantity" data-cb="product-quantity-elem" min="1" 
                                    	 	value="<?php echo ($planId == $plan->id) ? $planQuantity : 1; ?>" 
-                                   	 	onchange="quantityChange('<?php echo esc($plan->id) ?>')" 
+                                   	 	onchange="planQuantityChange('<?php echo esc($plan->id) ?>')" 
 										<?php echo ($planId != $plan->id ) ? "disabled" : "" ?> >
                                <?php } ?>
 
-                        <input type="hidden" id="plan_price_<?php echo esc($plan->id) ?>" 
+                        <input type="hidden" id="plan_price_<?php echo esc($plan->id) ?>" data-plan-price="<?php echo esc($plan->id) ?>"
 								name="plan_price" value="<?php echo number_format($plan->price / 100, 2, '.', '') ?>"/>
                         <?php $planqty = ($planId == $plan->id) ? $planQuantity : 1; 
                         	if (number_format($plan->price / 100, 2, '.', '') != 0.00) {
                          ?>
-                            <strong id="product_price_<?php echo esc($plan->id) ?>" class="cb-available-pick-price">
-								<?php echo $configData['currency_value'] . ' ' . number_format($plan->price * $planqty / 100, 2, '.', '') ?>			</strong>
+                            <strong id="product_price_<?php echo esc($plan->id) ?>" 
+									class="cb-available-pick-price">
+									<?php echo $configData['currency_value'] ?>
+								<span data-plan-total-price="<?php echo esc($plan->id)?>">
+									<?php echo number_format($plan->price * $planqty / 100, 2, '.', '') ?>
+								</span>			
+							</strong>
                         <?php } ?>
                     </div>
                     <div class="clearfix"> </div>
                     <?php if (isset($plan->description)) { ?>
                         <hr class="clearfix">
-                        <p class="help-block" style="display: block;"> <?php echo esc($plan->description) ?></p>
+                        <p class="help-block"> <?php echo esc($plan->description) ?></p>
                     <?php } ?>
                 </div>
             </div>

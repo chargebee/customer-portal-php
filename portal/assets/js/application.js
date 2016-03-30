@@ -39,7 +39,7 @@ function AjaxCallMessage(url, type, dataType, data, page) {
         data: data,
         contentType: "application/x-www-form-urlencoded;charset=utf-8",
 		beforeSend: function() {
-			$(".loader").show();
+			$(".cb-alert-flash, .loader").show();
 			$('.text-danger').hide();
 		},
         success: function(response) {

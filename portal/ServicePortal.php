@@ -24,27 +24,43 @@ class ServicePortal {
 	
 
     /*
-     * Retrieves all available plans from Chargebee.
-     */
-    public function retrieveAllPlan() {
-        $planResult = ChargeBee_Plan::all(array("limit" => 100));
-        return $planResult;
-    }
-
-    /*
      * Retrieves plan information from Chargebee.
      */
     public function retrievePlan($planId) {
         $planResult = ChargeBee_Plan::retrieve($planId);
-        return $planResult;
+        return $planResult->plan();
+    }
+
+    /*
+     * Retrieves all available plans from Chargebee.
+     */
+    public function retrieveAllPlans() {
+		$offset = null;
+		$plans = array();
+		do {
+        	$all = ChargeBee_Plan::all(array("limit" => 100, "offset" => $offset));
+			foreach ($all as $plan) {
+				array_push($plans, $plan);
+			}
+			$offset = $all->nextOffset();
+		} while($offset != null);
+        return $plans;
     }
 
     /*
      * Retrieves all available addons from Chargebee.
      */
-    public function retrieveAllAddon() {
-        $planResult = ChargeBee_Addon::all(array("limit" => 100));
-        return $planResult;
+    public function retrieveAllAddons() {
+		$addons = array();
+		$offset = null;
+		do{
+			 $all = ChargeBee_Addon::all(array("limit" => 100, "offset" => $offset));
+			 foreach ($all as $a){
+				 array_push($addons, $a);
+			 }
+			 $offset = $all->nextOffset();
+		} while($offset != null);
+        return $addons;
     }
 	
     /*
@@ -136,7 +152,7 @@ class ServicePortal {
             $result = ChargeBee_Subscription::update($this->getSubscription()->id, array(
                 "planId" => $_POST['planId'],
                 "planQuantity" => $_POST['planQuantity'],
-                "endOfTerm" => false,
+                "endOfTerm" => $settingconfigData["subscription"]["immediately"],
                 "replaceAddonList" => true,
                 "addons" => $_POST['addons']
             ));
@@ -223,7 +239,21 @@ class ServicePortal {
         $autoCollection = $customer->autoCollection;
         $subscription = $this->getSubscription();
 		
-        $allPlans = $this->retrieveAllPlan();
+		if($subscription->status == "in_trial" || $subscription->status == "cancelled" || $subscription->status == "future" || 
+				($autoCollection == "on" && $subscription->status == "non_renewing" && $customer->cardStatus == "no_card") ) {
+			return false;
+		}
+		
+        $allPlans = $this->retrieveAllPlans();
+		$planChange = $this->planAccessible($allPlans, $settingconfigData);
+		
+        $allAddons = $this->retrieveAllAddons(); 
+        $addonChange = $this->addonAccessible($allAddons, $settingconfigData);
+	
+		return $planChange || $addonChange;
+    }
+	
+	public function planAccessible($allPlans, $settingconfigData) {
         $activePlans = array();
         $archivedPlans = array();
         foreach ($allPlans as $p) {
@@ -235,16 +265,11 @@ class ServicePortal {
                 $archivedPlans[] = $p->plan()->id;
             }
 
-            if($p->plan()->id == $subscription->planId){
+            if($p->plan()->id == $this->getSubscription()->planId){
                 $currentPlanDetails = $p->plan();
             }
         }
 
-		if($subscription->status == "in_trial" || $subscription->status == "cancelled" || $subscription->status == "future" || 
-				($autoCollection == "on" && $subscription->status == "non_renewing" && $customer->cardStatus == "no_card") ) {
-			return false;
-		}
-		
 		$planChange = true;
 		if(sizeof($activePlans) == 0) { // if no active plans in the site
 			$planChange = false;
@@ -256,13 +281,8 @@ class ServicePortal {
 						$settingconfigData["changesubscription"]["planqty"] == 'false') {
 			$planChange = false;
 		}
-		
-        $allAddons = $this->retrieveAllAddon(); 
-        $addonChange = $this->addonAccessible($allAddons, $settingconfigData);
-	
-		return $planChange || $addonChange;
-    }
-	
+		return $planChange;
+	}
 	public function addonAccessible($allAddons, $settingconfigData) {
 		$curAddons = $this->getAddon();
         $activeAddons = array();

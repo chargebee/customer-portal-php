@@ -2,8 +2,8 @@
 include("header.php");
 $curAddons = $servicePortal->getAddon();
 $curPlan = $servicePortal->getSubscription()->planId;
-$allPlans = $servicePortal->retrieveAllPlan(); 
-$allAddons = $servicePortal->retrieveAllAddon(); 
+$allPlans = $servicePortal->retrieveAllPlans(); 
+$allAddons = $servicePortal->retrieveAllAddons(); 
 $planQuantity = $servicePortal->getSubscription()->planQuantity;
 $planId = $servicePortal->getSubscription()->planId;
 $currentTermEnd = $servicePortal->getSubscription()->currentTermEnd;
@@ -37,8 +37,7 @@ foreach ($allPlans as $plan) {
     }
 }
 $total = ($planResult->price * $servicePortal->getSubscription()->planQuantity);
-if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"] == 'false') {
-    ?>
+if ( !$servicePortal->planAccessible($allPlans, $settingconfigData) ) { ?>
     <input id="onePlan" name="onePlan" type="hidden" class="form-control" value="1" > 
 <?php } ?>
 
@@ -51,15 +50,16 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
                     <div class="cb-product">
                         <div class="cb-product-header">
                             <div class="cb-product-steps" data-cb="cb-product-steps">
-                                <div class="cb-product-step current" data-cb-step-for="plan" data-cb-current-step='current' id="step-plan">
+                                <div class="cb-product-step current" data-cb-step-for="plan" 
+											data-cb-current-step='current' id="step-plan">
                                     Change your plan
                                 </div>
                                 <?php if ( $servicePortal->addonAccessible($allAddons, $settingconfigData )) { ?>
-                                    <div class="cb-product-step future" data-cb-step-for="addon" data-cb-current-step='' id="step-addon">
+                                    <div class="cb-product-step future" data-cb-step-for="addon" 
+											data-cb-current-step='' id="step-addon">
                                         Add/Remove Addon(s)
                                     </div>
-                                <?php } else {
-                                    ?>                                    
+                                <?php } else { ?>                                    
                                     <input id="NoAddon" name="NoAddon" type="hidden" class="form-control" value="1" > 
                                 <?php } ?>
                                 <div class="cb-product-step future" data-cb-step-for="review" data-cb-current-step='' id="step-review">
@@ -78,20 +78,21 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
                                     if (number_format($planResult->price / 100, 2, '.', '') == 0.00) {
                                         ?>
                                         <div class="row cb-product-item">
-                                            <div class="col-xs-8"><?php echo esc($planResult->name) ?></div>
+                                            <div class="col-xs-8"><?php echo esc($planResult->invoiceName) ?></div>
                                             <div class="col-xs-4 text-right"></div>
                                         </div>
                                     <?php
                                     } else {
                                         ?>
                                         <div class="row cb-product-item">
-                                            <div class="col-xs-8"><?php echo esc($planResult->name) ?> ( <?php echo $configData['currency_value'] . ' ' . number_format($planResult->price / 100, 2, '.', '') ?> x <?php echo esc($planQuantity) ?> ) </div>
+                                            <div class="col-xs-8"><?php echo esc($planResult->invoiceName) ?> ( <?php echo $configData['currency_value'] . ' ' . number_format($planResult->price / 100, 2, '.', '') ?> x <?php echo esc($planQuantity) ?> ) </div>
                                             <div class="col-xs-4 text-right">
-												<strong><?php echo $configData['currency_value'] . ' ' . number_format($total / 100, 2, '.', '') ?>
-												</strong></div>
+												<strong>
+													<?php echo $configData['currency_value'] . ' ' . number_format($total / 100, 2, '.', '') ?>
+												</strong>
+											</div>
                                         </div>
                                     <?php } ?>
-
                                 </div>
                             </div>
 
@@ -114,10 +115,11 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
                                                     <?php }
                                                     ?>
                                                     <div class="row cb-product-item">
-                                                        <div class="col-xs-8"><?php echo esc($addons->addon()->name) ?>   ( <?php echo $configData['currency_value'] . number_format($addons->addon()->price / 100, 2, '.', '') ?> x <?php echo $addons->addon()->period ?> )</div>
+                                                        <div class="col-xs-8"><?php echo esc($addons->addon()->invoiceName) ?>   ( <?php echo $configData['currency_value'] . number_format($addons->addon()->price / 100, 2, '.', '') ?> x <?php echo $curaddon->quantity ?> )</div>
                                                         <div class="col-xs-4 text-right">
 															<strong><?php echo $configData['currency_value'] . number_format($addons->addon()->price / 100, 2, '.', '') ?>
-															</strong></div>
+															</strong>
+														</div>
                                                     </div>
                                                 </div>
                                                 <?php
@@ -159,12 +161,11 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
                                 include "renderPlans.php";
                             }
                             ?>
-
                             <span id="plan_id.err" class="text-danger">&nbsp;</span>
                             <span id="plan_quantity.err" class="text-danger">&nbsp;</span>
                             <hr class="clearfix">
                             <p class="cb-step-nav clearfix">
-                                <a data-cb-next-link="cb-nav-next" class="cb-nav-next" href="#" id="next" onclick="savePlan()">Next</a>
+                                <a data-cb-next-link="cb-nav-next" class="cb-nav-next" id="next" onclick="savePlan()">Next</a>
                             </p>
                             <div class="clearfix">
                                 <input type='button' data-cb="plan" class='btn btn-default' value="Save and Continue" id="continueSubscription" onclick="savePlan()">         
@@ -201,7 +202,7 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
                                         <div class="row cb-product-item cb-product-grand-total">
                                             <div class="col-xs-8 col-sm-9">Total
                                             </div>
-                                            <div class="col-xs-4 col-sm-3 text-right" data-cb="grand-total" id="grand-total" ><strong>£214.00</strong></div>
+                                            <div class="col-xs-4 col-sm-3 text-right" data-cb="grand-total" id="grand-total" ><strong>214.00</strong></div>
                                         </div>
                                     </div>
                                 </div>
@@ -214,7 +215,7 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
                                         <span class="glyphicon glyphicon-info-sign pull-left"></span>
                                         <div class="media-body" id="subscriptionMessage"> 
                                             <?php
-                                            if ($settingconfigData[subscription][immediately] == 'false') {
+                                            if ($settingconfigData["subscription"]["immediately"] == 'false') {
                                                 $phrase = $infoconfigData['Messages_during_change_subscription']['Change_at_end_of_term'];
                                                 $default = array('$subscription.current_term_end', '$estimated_invoice.amount');
                                                 $assign = array(date('d-M-y', $currentTermEnd), '');
@@ -262,7 +263,7 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
 </div>
 <?php include("footer.php"); ?>
 <script>
-    var addonIdList = [];
+	var addonIdList = [];
     var addonQuantityList = [];
     var currencyValue = "<?php echo $configData['currency_value'] ?>";
     $(function () {
@@ -277,32 +278,32 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
         }
     });
     function savePlan() {
-        var radioValue = $('input:radio[name=plan_id]:checked').val();
-        if (radioValue) {
-            $("#selectedPlanId").val(radioValue);
-            var price = $("#product_price_" + radioValue).text();
-            var planPrice = $("#plan_price_" + radioValue).val();
-            var quantity = $("#plan_quantity_" + radioValue).val();
-            if ($("#plan_quantity_" + radioValue).length > 0) {
-                var replaceHtml = toTitleCase(radioValue) + ' / ' + 'Month ' + '(' + currencyValue + ' ' + planPrice + ' x ' + quantity + ')';
-            } else{
-                var replaceHtml = toTitleCase(radioValue);
+        var planId = $('input:radio[name=plan_id]:checked').val();
+        if (planId) {
+            var price = $("span[data-plan-total-price='" + planId+"']").text();
+            var planPrice = $("input[data-plan-price='" + planId +"']").val();
+            var quantity = $("input[data-plan-quantity='" + planId+ "']").val();
+            if ($("input[data-plan-quantity='" + planId+ "']").length > 0 ) {
+                var replaceHtml = toTitleCase(planId) + ' / ' + 'Month ' + '(' + currencyValue + ' ' + planPrice + ' x ' + quantity + ')';
+            } else {
+                var replaceHtml = toTitleCase(planId);
             }
-            var data = {plan_id: radioValue, plan_quantity: quantity, plan_price: planPrice, perunit_price: price};
+            var data = {plan_id: planId, plan_quantity: quantity };
             var NoAddon = $("#NoAddon").val();
             if (NoAddon == 1) {
                 saveAddon(1);
                 return;
             }
-            $(".cb-alert-flash, .loader").show();
             $.ajax({
                 type: 'POST',
                 url: 'editAddon.php',
                 data: data,
                 contentType: "application/x-www-form-urlencoded;charset=utf-8",
-                success: function (result) {
-                    $(".cb-alert-flash, .loader").hide();
-                    $('#addons').html(result);
+				beforeSend: function(response){
+					$(".cb-alert-flash, .loader").show();
+				},
+                success: function (response) {
+                    $('#addons').html(response);
                     $('#step-plan').toggleClass('cb-product-step current cb-product-step past');
                     $('#step-addon').toggleClass('cb-product-step future cb-product-step current');
                     $('#changeYourPlan, #next').hide();
@@ -310,13 +311,20 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
                     $('#cb-wrapper-ssp').css('min-height', '620px');
                     $('#selectedPlan').html(replaceHtml);
                     $('#selectedPrice').html(price);
-                }
+                },
+				error: function(response) {
+					$("span[id='plan.id.err']").text("Sorry, Something went wrong. Please try later");
+				},
+				complete: function(response) {
+					$(".cb-alert-flash, .loader").hide();
+				}
             });
         }
-
-
     }
+	
     function saveAddon(id) {
+		addonIdList = [];
+	    addonQuantityList = [];
         if (id == 1) {
             $('#step-plan').toggleClass('cb-product-step current cb-product-step past');
             $('#step-review').toggleClass('cb-product-step future cb-product-step current');
@@ -331,12 +339,12 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
 
         var addonRadioValue = $('input[name=addons]:checked').val();
         var planRadioValue = $('input:radio[name=plan_id]:checked').val();
-        var planPrice = $("#product_price_" + planRadioValue).text();
-        var planActualPrice = $("#plan_price_" + planRadioValue).val();
-        var planQuantity = $("#plan_quantity_" + planRadioValue).val();
+        var planPrice = $("span[data-plan-total-price='" + planRadioValue + "']").text();
+        var planActualPrice = $("input[data-plan-price='" + planRadioValue + "']").val();
+        var planQuantity = $("input[data-plan-quantity='" + planRadioValue + "']").val();
 
-        var addonActualPrice = $("#addon_price_" + addonRadioValue).val();
-        var addonQuantity = $("#addon_quantity_" + addonRadioValue).val();
+        var addonActualPrice = $("span[data-addon-total-price='" +addonRadioValue+"']").val();
+        var addonQuantity = $("input[data-addon-quantity='" + addonRadioValue +"']").val();
 
         var submessge = $("#submessge").val();
 
@@ -351,7 +359,6 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
         }
         var finalTotal = planPrice;
         if (addonRadioValue) {
-            var addonPrice = '';
             var addonName = '';
             var addonReplaceHtml = '';
             var emptytext = '';
@@ -361,30 +368,26 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
             $('#selectedAddonAmount').html(emptytext);
             $("input[name=addons]:checked").each(function () {
                 var addonRadioValue = $(this).val();
-                addonPrice = $("#addon_price_" + addonRadioValue).text();
-                var addonProductPrice = $("#addon_product_price_" + addonRadioValue).val();
-                var addonQty = $("#addon_quantity_" + addonRadioValue).val();
-                addonName = $("#addonName_" + addonRadioValue).val();
+                var addonProductPrice = $("input[data-addon-price='" + addonRadioValue + "']").val();
+                var addonQty = $("input[data-addon-quantity='" + addonRadioValue +"']").val();
+                var addonName = $("input[data-addon-name='" + addonRadioValue +"']").val();
                 addonIdList.push(addonRadioValue);
                 addonQuantityList.push(addonQty);
                 if (typeof addonQty === 'undefined') {
-                    addonReplaceHtml = addonName + ' - ' + '(' + addonProductPrice + '  )';
+                    addonReplaceHtml = addonName + ' - ' + '(' + currencyValue + ' ' + addonProductPrice + '  )';
                 } else {
                     addonReplaceHtml = addonName + ' - ' + '(' + currencyValue + ' ' + addonProductPrice + ' x ' + addonQty + '  )';
                 }
-                container.append('<div class="row cb-product-item"> <div class="col-xs-8">'+addonReplaceHtml+'</div> <div class="col-xs-4 text-right">'+addonPrice+'</div></div>');
-                var planSplit = addonPrice.split(" ");
-                addonPricetot = parseFloat(addonPricetot) + parseFloat(planSplit[1]);
+				var addonPrice = (addonProductPrice * (addonQty == null ? 1 : addonQty));
+                container.append('<div class="row cb-product-item"> <div class="col-xs-8">'+addonReplaceHtml+'</div> <div class="col-xs-4 text-right">'+ currencyValue + ' ' + addonPrice.toFixed(2) + '</div></div>');
+				addonPricetot += addonPrice;
             });
             $('#ifAddonSelected').show();
             $('#selectedPlanReview').html(planReplaceHtml);
             $('#selectedPlanAmount').html(planPrice);
             var planSplit = planPrice.split(" ");
-            var addonSplit = addonPrice.split(" ");
-            var grandTotal = +planSplit[1] + +addonPricetot;
-            var grandTotal = grandTotal.toFixed(2);
-            var space = planSplit[0].concat(' ');
-            finalTotal = space.concat(grandTotal);
+            var grandTotal = ((planActualPrice * (planQuantity == null ? 1 : planQuantity)) + addonPricetot).toFixed(2);
+            var finalTotal = currencyValue.concat(" ").concat(grandTotal);
             finalsubmessage = submessge + finalTotal + '.';
             $("#grand-total, #grandTotal-body").html(finalTotal);
             $("#subscriptionMessage").html(finalsubmessage);
@@ -403,12 +406,16 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
             $('#step-review').toggleClass('cb-product-step current cb-product-step future');
             $('#review, #prev1').hide();
             $('#addons, #next1, #prev').show();
-        }
-        $('#step-addon').toggleClass('cb-product-step current cb-product-step future');
-        $('#step-plan').toggleClass('cb-product-step past cb-product-step current');
-        $('#addons, #prev, #next1, #next').hide();
-        $('#changeYourPlan, #next').show();
+        } else {
+        	$('#step-addon').toggleClass('cb-product-step current cb-product-step future');
+       	 	$('#step-plan').toggleClass('cb-product-step past cb-product-step current');
+        	$('#addons, #prev, #next1, #next').hide();
+        	$('#changeYourPlan, #next').show();
+		}
+		addonIdList = [];
+	    addonQuantityList = [];
     }
+	
     function backAddon() {
         var NoAddon = $("#NoAddon").val();
         if (NoAddon == 1) {
@@ -421,40 +428,48 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
         $('#addons, #next1, #prev').show();
         $('#cb-wrapper-ssp').css('min-height', '620px');
     }
+	
 	/*
 	 * On selecting the plan enables the plan quantity for the user to change the quantity.
 	 */
-    $("input[name=plan_id]:radio").change(function () {
-        var selectedId = $("input[name=plan_id]:radio:checked").attr('id');
-        $('#' + selectedId).attr("checked");
-        var res = selectedId.split("plan.id.");
+    $("input[name=plan_id]:radio").on('change', function () {
+        var selector = $("input[name=plan_id]:radio:checked");
+        $(selector).attr("checked");
+        var res = $(selector).val();
         $('input[name=plan_quantity]').attr('disabled', true);
-        $("#plan_quantity_" + res[1]).removeAttr('disabled');
+        $("input[data-plan-quantity='"+ res +"']").removeAttr('disabled');
     });
 
+     function onAddonClick(element){
+		 var addonId = $(element).attr("data-addon-id");
+		 if($(element).is(":checked")){
+			 $("input[data-addon-quantity='"+ addonId +"']").removeAttr('disabled');
+		 } else {
+			 $("input[data-addon-quantity='"+ addonId +"']").attr("disabled", "true");
+		 }
+     }
 
-    function quantityChange(planId) {
-        var quantity = $("#plan_price_" + planId).val();
-        var price = $("#product_price_" + planId).text();
-        var dropqty = $("#plan_quantity_" + planId).val();
-        var res = price.split(" ");
-        var tot = quantity * dropqty;
-        var tot = tot.toFixed(2);
-        var space = res[0].concat(' ');
-        var final = space.concat(tot);
-        $("#product_price_" + planId).text(final);
+    /**
+	 * On change quantity in plan, plan price is updated.
+	 */
+    function planQuantityChange(planId) {
+        var planPrice = $("input[data-plan-price='"+ planId +"']").val();
+        var quantity = $("input[data-plan-quantity='" + planId + "']").val();
+        var tot = planPrice * quantity;
+        var total = tot.toFixed(2);
+        $("span[data-plan-total-price='"+ planId +"']").text(total);
     }
 
-    function quantityChangeaddon(addonId) {
-        var productprice = $("#addon_product_price_" + addonId).val();
-        var price = $("#addon_price_" + addonId).text();
-        var dropqty = $("#addon_quantity_" + addonId).val();
-        var res = price.split(" ");
-        var tot = productprice * dropqty;
+    /**
+	 * On change quantity in addon, addon price is updated.
+	 */
+    function addonQuantityChange(addonId) {
+        var productPrice = $("input[data-addon-price='" + addonId + "']").val();
+        var price = $("span[data-addon-total-price='" + addonId + "']").text();
+        var dropQty = $("input[data-addon-quantity='" + addonId + "']").val();
+        var tot = productPrice * dropQty;
         var tot = tot.toFixed(2);
-        var space = res[0].concat(' ');
-        var final = space.concat(tot);
-        $("#addon_price_" + addonId).text(final);
+        $("span[data-addon-total-price='" + addonId + "']").text(tot);
     }
 
     function toTitleCase(str) {
@@ -462,35 +477,27 @@ if (sizeof($allPlans) == 1 && $settingconfigData["changesubscription"]["planqty"
             return match.toUpperCase();
         });
     }
+	
+	/**
+	 * On click Change Subscription button, sends Ajax request to update the subscription.
+	 */
     $('#changeSubscription').click(function () {
-        var addonRadioValue = $('input[name=addons]:checked').val();
-        var planRadioValue = $('input[name=plan_id]:checked').val();
-        var addonQuantity = 1;
-        if ($("#addon_quantity_" + addonRadioValue).length > 0) {
-            addonQuantity = $("#addon_quantity_" + addonRadioValue).val();
-        } else
-        {
-            addonQuantity = 1;
-        }
+        var planId = $('input[name=plan_id]:checked').val();
+		var planQuantity = 1;
+		
+        if ($("input[data-plan-quantity='" + planId + "']").length > 0) {
+            var planQuantity = $("input[data-plan-quantity='" + planId + "']").val();
+        } 
 
-        if ($("#plan_quantity_" + planRadioValue).length > 0) {
-            var planQuantity = $("#plan_quantity_" + planRadioValue).val();
-        } else
-        {
-            var planQuantity = 1;
-        }
-        var planRadioValue = $('input:radio[name=plan_id]:checked').val();
-        var subscriptionId = $("#subscriptionId").val();
         var endOfTerm = $("#end_of_term").val();
-        var addons = {},
-            i;
-
+        var addons = {};
         for (i = 0; i < addonIdList.length; i++) {
             var addonId = addonIdList[i];
             var addonQuantity = addonQuantityList[i];
             addons[i] = {id:addonId, quantity:addonQuantity};
         }
-        var params = {action : "updateSubscription", planId: planRadioValue, planQuantity: planQuantity, addons: addons, endOfTerm: endOfTerm};
+		
+        var params = {action : "updateSubscription", planId: planId, planQuantity: planQuantity, addons: addons, endOfTerm: endOfTerm };
         AjaxCallMessage('api.php', 'POST', 'json', $.param(params), 'editsubscription');
     });
 </script>

@@ -35,7 +35,7 @@ class ChargeBee_Curl {
         $opts[CURLOPT_RETURNTRANSFER] = true;
         $opts[CURLOPT_CONNECTTIMEOUT] = ChargeBee_Environment::$connectTimeout;
         $opts[CURLOPT_TIMEOUT] = ChargeBee_Environment::$timeout;
-        $userAgent = "Chargebee-PHP-Client" . " v" . ChargeBee_Version::VERSION;
+        $userAgent = "Chargebee-OSP-PHP-Client" . " v" . ChargeBee_Version::VERSION;
 		
 		$httpHeaders = self::addCustomHeaders($headers);
 		array_push($httpHeaders, 'Accept: application/json', "User-Agent: " . $userAgent); // Adding headers to array

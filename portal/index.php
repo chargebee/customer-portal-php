@@ -183,9 +183,11 @@ $customerInvoice = $servicePortal->retrieveInvoice();
         <hr class="clearfix">
         <div class="text-right">
 			<?php if($subscription->status == "cancelled") {?>
-				<a class="text-danger" data-cb-jshook="link-cancel-subscription" 
+				<?php if($settingconfigData["reactivatesubscription"]["allow"] == 'true') {?>
+					<a class="text-danger" data-cb-jshook="link-cancel-subscription" 
 						id="reactivateSubscription">Reactivate</a> 
 						this subscription
+			    <?php } ?>
             <?php } else if ($settingconfigData["cancelsubscription"]["allow"] == 'true') { 
                 	if (!($subscription->status == "non_renewing" && 
 									$settingconfigData["cancelsubscription"]["immediately"] == "false")) { ?>

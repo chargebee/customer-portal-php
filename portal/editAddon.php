@@ -1,14 +1,10 @@
 <?php 
 include_once('init.php');
-$curAddons = $servicePortal->getAddon();
-$allAddons = $servicePortal->retrieveAllAddon(); 
+$subAddons = $servicePortal->getAddon();
+$allAddons = $servicePortal->retrieveAllAddons(); 
 $plan_id = isset($_POST['plan_id']) ? $_POST['plan_id'] : null;
 $plan_quantity = isset($_POST['plan_quantity']) ? $_POST['plan_quantity'] : null;
-$plan_price = isset($_POST['plan_price']) ? $_POST['plan_price'] : null;
-$planResult = $servicePortal->retrievePlan($plan_id);
-foreach ($curAddons as $curaddon) {
-    $currentAddon[] = $curaddon->id;
-}
+$plan = $servicePortal->retrievePlan($plan_id);
 ?>
 <div class="cb-product-body" data-cb="cb-product-body" data-cb-req-from="addon" >
     <div class="cb-product-box">
@@ -18,8 +14,8 @@ foreach ($curAddons as $curaddon) {
         <hr class="clearfix">
         <div class="cb-product-list">
             <div class="row cb-product-item">
-                <div class="col-xs-8"  id="selectedPlan"><?php echo esc($planResult->plan()->invoiceName) ?> / Month ( <?php echo $configData['currency_value'] .' '. number_format($planResult->plan()->price / 100, 2, '.', '') ?>  x <?php echo $planResult->plan()->period ?> )</div>
-                <div class="col-xs-4 text-right" id="selectedPrice"> <?php echo $configData['currency_value'] ?><strong><?php echo number_format($planResult->plan()->price / 100, 2, '.', '') ?> </strong></div>
+                <div class="col-xs-8"  id="selectedPlan"><?php echo esc(isset($plan->invoiceName) ? $plan->invoiceName : $plan->name) ?> / Month ( <?php echo $configData['currency_value'] .' '. number_format($plan->price / 100, 2, '.', '') ?>  x <?php echo $plan->period ?> )</div>
+                <div class="col-xs-4 text-right" id="selectedPrice"> <?php echo $configData['currency_value'] ?><strong><?php echo number_format($plan->price / 100, 2, '.', '') ?> </strong></div>
             </div>
         </div>
     </div>
@@ -32,38 +28,56 @@ foreach ($curAddons as $curaddon) {
         $showMessage = 0; 
         foreach ($allAddons as $addons) {
             if (($addons->addon()->status == "archived" && in_array($addons->addon()->id, $currentAddon)) || ($addons->addon()->status == "active" && $addons->addon()->chargeType == "recurring")) {
-                if ($planResult->plan()->period == $addons->addon()->period && $planResult->plan()->periodUnit == $addons->addon()->periodUnit) {
+                if ($plan->period == $addons->addon()->period && $plan->periodUnit == $addons->addon()->periodUnit) {
                     $showMessage++;
                     ?>
+					
+					<?php
+					    $currentAddon = null; 
+					    foreach($subAddons as $a) {
+						  if($addons->addon()->id == $a->id){
+						 	$currentAddon = $a;
+							break;
+						  }
+					    } 
+					?>
                     <div class="cb-available-item cb-avail-has-qty" data-cb="cb-available-item">
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="addons" 
 										id="addons.id.<?php echo esc($addons->addon()->id) ?>" 
-										value="<?php echo esc($addons->addon()->id) ?>" validate="true" 
-										<?php echo (in_array($addons->addon()->id, $currentAddon)) ? "checked" : "" ?> >
-                                		<?php echo esc($addons->addon()->name) ?> 
+										value="<?php echo esc($addons->addon()->id) ?>" validate="true"
+										data-addon-id="<?php echo esc($addons->addon()->id) ?>"
+										<?php echo ($currentAddon != null ? "checked" : "" ) ?>  onclick="onAddonClick(this)">
+                                		<?php echo esc(isset($addons->addon()->invoiceName) ? $addons->addon()->invoiceName : $addons->addon()->name) ?> 
                                 <input type="hidden" data-cb="cb-addon-index" name="cb-selected-addon" disabled="" 
 								 	   	id="addonName_<?php echo esc($addons->addon()->id) ?>" 
-										value="<?php echo esc($addons->addon()->name) ?>"> 
+										data-addon-name="<?php echo esc($addons->addon()->id) ?>"
+										value="<?php echo esc(isset($addons->addon()->invoiceName) ? $addons->addon()->invoiceName : $addons->addon()->name) ?>"> 
                             </label>
 
                             <div class="cb-available-pick">
-                                <input type="hidden" id="addon_product_price_<?php echo esc($addons->addon()->id) ?>" 										name="addon_product_price" 
+                                <input type="hidden" id="addon_product_price_<?php echo esc($addons->addon()->id) ?>" 										name="addon_product_price" data-addon-price=<?php echo esc($addons->addon()->id) ?>
 										value="<?php echo number_format($addons->addon()->price / 100, 2, '.', '') ?>"/>    
                                 <?php if ($addons->addon()->type == "quantity") { ?>
                                     <span>Qty</span>
                                     <input type="number" validate="true" class="form-control"  
 										id="addon_quantity_<?php echo esc($addons->addon()->id) ?>" 
-										name="addon_quantity" data-cb="product-quantity-elem" min="1" value="1" 
-                                    	onchange="quantityChangeaddon('<?php echo esc($addons->addon()->id) ?>')" >
+										data-addon-quantity="<?php echo esc($addons->addon()->id) ?>"
+										name="addon_quantity" data-cb="product-quantity-elem" min="1" 
+										value="<?php  echo ($currentAddon != null ? $currentAddon->quantity : "1" )?>" 
+                                    	onchange="addonQuantityChange('<?php echo esc($addons->addon()->id) ?>')" 
+										<?php echo ($currentAddon == null ? "disabled='true'": "") ?> >
                                 <?php } ?>
 
                                 <?php
                                 if ($addons->addon()->price != 0) {
                                     ?>
                                     <strong id="addon_price_<?php echo esc($addons->addon()->id) ?>" class="cb-available-pick-price" >
-										<?php echo $configData['currency_value'] .' '. number_format($addons->addon()->price / 100, 2, '.', '') ?>
+										<?php echo $configData['currency_value']  ?>
+										<span data-addon-total-price="<?php echo esc($addons->addon()->id) ?>"> 
+											<?php echo number_format($addons->addon()->price / 100, 2, '.', '') ?> 
+										</span>
 									</strong>
                                 <?php } else{ ?>
                                     <strong id="addon_price_<?php echo esc($addons->addon()->id) ?>" class="cb-available-pick-price">

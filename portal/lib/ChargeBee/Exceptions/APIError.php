@@ -1,4 +1,4 @@
-    <?php
+<?php
 
 class ChargeBee_APIError extends Exception {
 
@@ -13,8 +13,7 @@ class ChargeBee_APIError extends Exception {
         $this->jsonObject = $jsonObject;
         $this->type = isset($jsonObject['type'])? $jsonObject['type']:null;
         $this->apiErrorCode = $jsonObject['api_error_code'];
-        $this->param = isset($jsonObject['param'])?$jsonObject['param']:null;    
-        $this->errormsg = isset($jsonObject['error_msg'])?$jsonObject['error_msg']:null; 
+        $this->param = isset($jsonObject['param'])?$jsonObject['param']:null;        
         $this->httpStatusCode = $httpStatusCode;
     }
 
@@ -33,7 +32,7 @@ class ChargeBee_APIError extends Exception {
     public function getParam() {
         return $this->param;
     }
-    
+
     /**
      * This function has been deprecated. Use getHttpStatusCode.
      * @deprecated

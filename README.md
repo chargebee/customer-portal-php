@@ -1,4 +1,17 @@
 # CUSTOMER PORTAL
+
+* [Introduction](#introduction)
+* [What can I do with the open source portal code?](#what-can-i-do-with-the-open-source-portal-code)
+* [Why would I want to use this?](#why-would-i-want-to-use-this)
+* [What can be done with this code?](#what-can-be-done-with-this-code)
+* [How is User Management handled?](#how-is-user-management-handled)
+* [Theme Customization](#theme-customization)
+* [Configuration](#configuration)
+* [How to get started](#how-to-get-started)
+* [Feature wishlist and how to implement it](#feature-wishlist-and-how-to-implement-it)
+* [License](#license)
+
+## Introduction
 Chargebee is a subscription billing management service that eases the complexities involved in managing recurring payments. As part of a comprehensive subscription lifecycle management system, Chargebee provides hosted checkout pages and 'customer portals'.
 
 As your business scales up, you might come across a scenario where you’d want certain specific and essential features to be implemented in your customer portal. Needless to say, this comes with a lot of dependencies such as:
@@ -55,14 +68,14 @@ The code is modular which makes it easy to add the functionalities you need usin
 
 ## How is User Management handled?
 
-If you already have a user management system at your end, you could ignore this section and directly use the rest of the code base.
-
 Chargebee’s user management supports the entire account setup starting from portal set up to email address verification, password retrieval, login, and logout. 
 
 To understand the detailed workflow of the signup process, please follow the link below: 
 https://www.chargebee.com/docs/customer_portal.html#how-can-your-customers-access-their-portal
 
 The code that integrates with Chargebee’s user management system is located in [Auth.php](portal/Auth.php).
+
+If you already have a user management system at your end, you could ignore this section and directly insert your authentication code in init.php. The rest of the codebase can be used as such.
 
 ## Theme Customization
 If you’re using our user management option, you would have to customize the theme to match your website. 
@@ -112,6 +125,20 @@ In order to use this portal, you would have to:
     ```
 
 If you need assistance with the implementation, or have requirements regarding the same, please write to support@chargebee.com. 
+
+## Feature wishlist and how to implement it
+
+### Multiple Subscription
+The existing code can be easily customized to support multiple subscriptions. 
+
+When Chargebee’s authentication module is used:
+
+As soon as the user is redirected from Chargebee, the “[Activate Portal Session](https://apidocs.chargebee.com/docs/api/portal_sessions#activate_a_portal_session)” API is called. In response, we return the list of subscriptions associated with the customer. If more than 1 subscription is present for the customer, you could direct him/her to a page where the subscription details are displayed. Depending on the subscription selected, the portal can be initialized by passing the subscription id to the [ServicePortal](https://github.com/chargebee/customer-portal-php/blob/master/portal/init.php#L63) object in the init.php file.
+
+When your own authentication module is used:
+
+You could call the “[List Subscriptions For A Customer](https://apidocs.chargebee.com/docs/api/subscriptions#list_subscriptions_for_a_customer)” API to receive subscription details of a particular customer. If more than 1 subscription is present for a customer, you could direct him/her to a page where the subscription details are displayed. Depending on the subscription selected, the portal can be initialized by passing the subscription id to the [ServicePortal](https://github.com/chargebee/customer-portal-php/blob/master/portal/init.php#L63) object in the init.php file.
+
 
 ## License
 See the LICENSE file

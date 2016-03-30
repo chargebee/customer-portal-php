@@ -47,7 +47,7 @@ if (!isset($customer->paymentMethod)) {
         </div>
     </div>
 <?php } ?>
-<?php if($customer->paymentMethod->type == "card") {?>
+<?php if(isset($customer->paymentMethod) && $customer->paymentMethod->type == "card") {?>
 	<div class="form-horizontal">
 		<div class="row">
     		<div class="col-sm-6">
