@@ -4,11 +4,11 @@
 * [What can I do with the open source portal code?](#what-can-i-do-with-the-open-source-portal-code)
 * [Why would I want to use this?](#why-would-i-want-to-use-this)
 * [What can be done with this code?](#what-can-be-done-with-this-code)
-* [How is User Management handled?](#how-is-user-management-handled)
-* [Theme Customization](#theme-customization)
+* [How is user management handled?](#how-is-user-management-handled)
+* [Theme customization](#theme-customization)
 * [Configuration](#configuration)
-* [How to get started](#how-to-get-started)
-* [Feature wishlist and how to implement it](#feature-wishlist-and-how-to-implement-it)
+* [How to get started?](#how-to-get-started)
+* [Feature wishlist and how to implement](#feature-wishlist-and-how-to-implement)
 * [License](#license)
 
 ## Introduction
@@ -66,7 +66,7 @@ The UI for this portal built using Bootstrap CSS and the base customized CSS is 
 
 The code is modular which makes it easy to add the functionalities you need using the configuration files present under portal/config directory.
 
-## How is User Management handled?
+## How is user management handled?
 
 Chargebee’s user management supports the entire account setup starting from portal set up to email address verification, password retrieval, login, and logout. 
 
@@ -77,7 +77,7 @@ The code that integrates with Chargebee’s user management system is located in
 
 If you already have a user management system at your end, you could ignore this section and directly insert your authentication code in init.php. The rest of the codebase can be used as such.
 
-## Theme Customization
+## Theme customization
 If you’re using our user management option, you would have to customize the theme to match your website. 
 
 ## Configuration
@@ -98,7 +98,7 @@ The configuration details of this implementation are captured in the files prese
 
 In order to use this portal, you would have to:
 
-1. Add your server domain in your Chargebee site under *Settings> Hosted Page Settings> Whitelist Return URL> Whitelisted Domain*. 
+1. Add your server domain in your Chargebee site under *Settings> Hosted Page Settings> Whitelist Return URL> Whitelisted Domain*. Please note that we only support port numbers 443, 80, 8443, 8080 & 9001.
 
 2. Edit the properties below in the "portal/config/config.ini" file:
    * SITE_URL and CANCEL_URL should be your server domain.
@@ -126,7 +126,9 @@ In order to use this portal, you would have to:
 
 If you need assistance with the implementation, or have requirements regarding the same, please write to support@chargebee.com. 
 
-## Feature wishlist and how to implement it
+## Feature wishlist and how to implement 
+
+Below is the implementation guide for features that might be important for your business. 
 
 ### Multiple Subscription
 The existing code can be easily customized to support multiple subscriptions. 
@@ -138,6 +140,60 @@ As soon as the user is redirected from Chargebee, the “[Activate Portal Sessio
 When your own authentication module is used:
 
 You could call the “[List Subscriptions For A Customer](https://apidocs.chargebee.com/docs/api/subscriptions#list_subscriptions_for_a_customer)” API to receive subscription details of a particular customer. If more than 1 subscription is present for a customer, you could direct him/her to a page where the subscription details are displayed. Depending on the subscription selected, the portal can be initialized by passing the subscription id to the [ServicePortal](https://github.com/chargebee/customer-portal-php/blob/master/portal/init.php#L63) object in the init.php file.
+
+
+### One Time Purchase
+
+
+Say a customer of yours wants to purchase a product that you’d sold in the past. You could create a page that would list all the products available for one time purchase. You would typically have a third party cart that the customer would use to select the product. When a customer places the order, instead of requesting the customer to checkout once again, you could connect with Chargebee via API and process the order through.
+
+The one time products should be set up in Chargebee as Non Recurring Addons. You could list the one time products in a page and display this link/page in the Customer Portal. The products in the page have to be linked to the Non Recurring Addons in Chargebee. The [List Addon](https://apidocs.chargebee.com/docs/api/addons#list_addons) API call can be used to fetch and display the addon details.
+
+When the product is selected by the user, the product ID would be used to call the [Create Invoice](https://apidocs.chargebee.com/docs/api/invoices#create_an_invoice) API. Once the API call is successful, Chargebee will send a response and using this information, you could display the invoice details to the customer. The invoice will also be available in the portal.
+
+### Pause Subscription
+
+If the subscription is paused, the following things have to be considered:
+
+* The customer should not be billed during the paused period. 
+* The product should not be shipped during the paused period. 
+* There should be an option to filter out subscriptions that have been paused.
+* Email Notifications (if enabled) should be customized accordingly.
+
+
+With these in mind, the best way to achieve it would be by using a Custom Field value “Paused”. The workflow is as below:
+
+1. When the subscription is paused by the customer, “[Update a Customer](https://apidocs.chargebee.com/docs/api/customers#update_a_customer)” API has to be called and the custom field value should be passed (Paused= True).
+
+2. The next billing date should then be changed using the “[Change Term End](https://apidocs.chargebee.com/docs/api/subscriptions#change_term_end)” API call.
+
+3. If the “Subscription Changed” email notification is enabled, the customer will receive an email with the subscription changes. This email can be customized to include specific messages such as “Your subscription has been paused until X”. This can be done using conditions similar to the one shown below:
+
+  ```
+  {{#customer.cf_paused}}
+	Your subscription has been paused until X
+  {{/customer.cf_paused}}
+  ```
+
+4. When the paused term gets over, the subscription renewal event will be triggered. Using this, “Update a customer” API has to be called to update the Custom Field value (Paused= false). When the paused term ends, the subsequent renewal dates will also change. The customer could be informed about this either while the subscription is being paused (a text message perhaps) or through the “Subscription Changed” email notification.
+
+**Optional**: The customer could also have the option to “Resume” the subscription. The billing date can also be set by the customer. In this case as well, the subsequent renewal dates will be changed ( a text message showing this before confirmation).
+
+In the future, if you’d like to retrieve information about “Paused” subscriptions, you could do that by using the custom field value as the filter criteria.
+
+If the subscription is paused while it is:
+
+* In Trial:  The subscription status remains “In Trial”.
+* Active: The subscription status remains “Active”.
+* Future: The subscription status remains the same and the next billing date is pushed further ahead.
+* Non Renewing: You might not want to show the “Pause” subscription option here because in this case, only the cancellation date will be shifted.
+Cancelled: Hide the option.
+
+**Reports And Exports**
+
+Subscription pause will not affect the Active subscription count and the MRR reports. 
+
+Once the “Pause Subscription” feature is implemented, if you’d like to take an export of Active subscriptions alone, you’d have to use an additional filter criteria to ensure that the subscriptions with the custom field value “Paused” are excluded. 
 
 
 ## License
