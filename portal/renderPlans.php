@@ -2,30 +2,28 @@
 if(isset($nonGroupPlans)){ ?>
     <h4> Your Available Plan(s)</h4>
 <?php }else{
-    $currIndex = 0;
+	$groupPlans = true;
+    $currIndex = 1;
 }?>
 <div class='cb-available-list cb-has-select'>
     <?php
     foreach ($planList as $key => $value) {
         $plan = $allPlansIndexed[$key];
-        if ($plan->periodUnit == "week") {
-            $planHeader = ($value == 1) ? "Weekly Plans" : $value . " Weekly Plan(s)";
-        } elseif ($plan->periodUnit == "month" && $plan->period == 3) {
-            $planHeader = "Quarterly Plans";
-        } elseif ($plan->periodUnit == "month" && $plan->period == 6) {
-            $planHeader = "Half Yearly Plans ";
-        } elseif ($plan->periodUnit == "month") {
-            $planHeader = ($value == 1) ? "Monthly Plans" : $value . " Monthly Plan(s)";
-        } elseif ($plan->periodUnit == "year") {
-            $planHeader = ($value == 1) ? "Yearly Plans" : $value . " Yearly Plan(s)";
-        }
-
-        if (isset($currIndex) && $currIndex != $value) {
+        if (isset($groupPlans) && $currIndex == 1) {
             $currIndex = $value;
-			?>
-            <h4> <?php echo $planHeader ?></h4>
-            <?php
-        }
+	        if ($plan->periodUnit == "week") {
+	            $planHeader = ($value == 1) ? "Weekly Plans" : $value . " Weekly Plan(s)";
+	        } elseif ($plan->periodUnit == "month" && $plan->period == 3) {
+	            $planHeader = "Quarterly Plans";
+	        } elseif ($plan->periodUnit == "month" && $plan->period == 6) {
+	            $planHeader = "Half Yearly Plans ";
+	        } elseif ($plan->periodUnit == "month") {
+	            $planHeader = ($value == 1) ? "Monthly Plans" : $value . " Monthly Plan(s)";
+	        } elseif ($plan->periodUnit == "year") {
+	            $planHeader = ($value == 1) ? "Yearly Plans" : $value . " Yearly Plan(s)";
+	        } ?>
+			<h4> <?php echo $planHeader ?> </h4>
+	 <?php }
 
         if (($plan->status == "active") || ($plan->status == "archived")) { 
 			?>
@@ -43,15 +41,14 @@ if(isset($nonGroupPlans)){ ?>
                             <span>Qty</span>
                             <input type="number" validate="true" class="form-control"  
 										data-plan-quantity="<?php echo esc($plan->id) ?>"
-										name="plan_quantity" data-cb="product-quantity-elem" min="1" 
-                                   	 	value="<?php echo ($planId == $plan->id) ? $planQuantity : 1; ?>" 
-                                   	 	onchange="planQuantityChange('<?php echo esc($plan->id) ?>')" 
-										<?php echo ($planId != $plan->id ) ? "disabled" : "" ?> >
+										name="plan_quantity" data-cb="plan-quantity-select" min="1" 
+                                   	 	value="<?php echo ($curPlan == $plan->id) ? $planQuantity : 1; ?>" 
+										<?php echo ($curPlan != $plan->id ) ? "disabled" : "" ?> >
                                <?php } ?>
 
                         <input type="hidden" id="plan_price_<?php echo esc($plan->id) ?>" data-plan-price="<?php echo esc($plan->id) ?>"
 								name="plan_price" value="<?php echo number_format($plan->price / 100, 2, '.', '') ?>"/>
-                        <?php $planqty = ($planId == $plan->id) ? $planQuantity : 1; 
+                        <?php $planqty = ($curPlan == $plan->id) ? $planQuantity : 1; 
                         	if (number_format($plan->price / 100, 2, '.', '') != 0.00) {
                          ?>
                             <strong id="product_price_<?php echo esc($plan->id) ?>" 
@@ -72,6 +69,7 @@ if(isset($nonGroupPlans)){ ?>
             </div>
             <?php
         }
+		$currIndex++;
     }
     ?>
 </div>

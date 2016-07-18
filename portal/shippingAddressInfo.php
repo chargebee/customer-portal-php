@@ -4,7 +4,7 @@
                 <div class="media text-left">
                     <span class="glyphicon glyphicon-info-sign pull-left"></span>
                     <div class="media-body">
-                        <?php echo $infoconfigData['Shipping_Information']['No_shipping_address_present']; ?>
+                        <?php echo InfoNAlerts::shippingAddressNotPresetInfoMsg($servicePortal) ?>
                     </div>
                 </div>
             </div>

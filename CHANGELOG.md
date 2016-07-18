@@ -1,3 +1,11 @@
+###v1.2.0 (2016-07-18)
+* * *
+
+* Updated with Chargebee v2.0.8 library
+* Change subscription full code revamp
+* InfoNAlerts.ini has been removed and moved to infoNAlerts.php file.
+* Issue fixes
+
 ###v1.0.1 (2016-03-30)
 * * *
 

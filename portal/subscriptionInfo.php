@@ -1,31 +1,18 @@
 <?php
-$currentPlanDetails = $servicePortal->retrievePlan($subscription->planId);
-if ($subscription->status == 'non_renewing' && $subscription->currentTermEnd < time()) {
-    $estimate = array();
-} else {
-    $estimate = $servicePortal->retrieveEstimate();
+$invoiceEstimate = null;
+if ($subscription->status != 'non_renewing' &&  $subscription->status != 'cancelled') {
+    $invoiceEstimate = $servicePortal->changeSubscriptionEstimate(null, null, null, false, false)->nextInvoiceEstimate;
 }
 if ($subscription->status == "future") {
-    if(isset($subscription->trialStart)){
-        $trialstartdetails = str_replace('$subscription.trial_start', date('d-M-y', $subscription->trialStart), 											$infoconfigData['Future_Subscriptions']['Future_subscription_info_trial']);
-        $subscriptionInfoMsg = str_replace('$subscription.trial_end', date('d-M-y', $subscription->trialEnd), $trialstartdetails);
-    } else{
-        $subscriptionInfoMsg = str_replace('$subscription.start_date', date('d-M-y', $subscription->startDate), 										$infoconfigData['Future_Subscriptions']['Future_subscription_info_active']);
-    } 
+	$subscriptionInfoMsg = InfoNAlerts::subscriptionInfoInFutureState($servicePortal);
 } else if ($subscription->status == "in_trial") {
-	$subscriptionInfoMsg =str_replace('$subscription.trial_end', date('d-M-y', $subscription->trialEnd), 									$infoconfigData['Trial_Subscriptions']['Trial_end_date']);
+	$subscriptionInfoMsg = InfoNAlerts::subscriptionInfoInTrialState($servicePortal);
 } else if ($subscription->status == "active") {
-	$subscriptionInfoMsg = str_replace('$subscription.current_term_end', date('d-M-y', $subscription->currentTermEnd), 									$infoconfigData['Active_Subscriptions']['Subscription_renewal_info']);
+	$subscriptionInfoMsg = InfoNAlerts::subscriptionInfoInActiveState($servicePortal);
 } else if ($subscription->status == "non_renewing") {
-	$subscriptionInfoMsg = str_replace('$subscription.cancelled_at', date('d-M-y', $subscription->cancelledAt), 									$infoconfigData['Non_Renewing_Subscriptions']['Will_be_canceled']); 
+	$subscriptionInfoMsg = InfoNAlerts::subscriptionInfoInNonRenewingState($servicePortal); 
 } else if ($subscription->status == "cancelled") {
-    if($subscription->cancelReason == 'not_paid'){
-        $subscriptionInfoMsg =  $infoconfigData['Canceled_Subscriptions']['Canceled_due_to_invoice_not_paid'];
-    } elseif($subscription->cancelReason == 'no_card'){
-        $subscriptionInfoMsg = $infoconfigData['Canceled_Subscriptions']['Canceled_due_to_no_card'];
-    } else{
-        $subscriptionInfoMsg = $infoconfigData['Canceled_Subscriptions']['Canceled'];
-	}
+	$subscriptionInfoMsg = InfoNAlerts::subscriptionInfoInCancelState($servicePortal);
 }
 ?>
 
@@ -44,8 +31,8 @@ if ($subscription->status == "future") {
 
 <ul class="list-unstyled cb-subscribed-items">
     <?php
-    if (isset($estimate->lineItems)) {
-        foreach ($estimate->lineItems as $li) {
+    if (isset($invoiceEstimate) && isset($invoiceEstimate->lineItems)) {
+        foreach ($invoiceEstimate->lineItems as $li) {
             ?>
             <li>
                 <div class="row">
@@ -66,8 +53,8 @@ if ($subscription->status == "future") {
         }
     }
 	
-    if (isset($estimate->taxes)) {
-        foreach ($estimate->taxes as $t) {
+    if (isset($invoiceEstimate) && isset($invoiceEstimate->taxes)) {
+        foreach ($invoiceEstimate->taxes as $t) {
             ?>
             <li>
                 <div class="row">
@@ -79,13 +66,13 @@ if ($subscription->status == "future") {
         <?php
         }
     }
-    if (isset($estimate->discounts)) {
-        foreach ($estimate->discounts as $dis) {
+    if (isset($invoiceEstimate) && isset($invoiceEstimate->discounts)) {
+        foreach ($invoiceEstimate->discounts as $dis) {
             ?>
         <li>
             <div class="row">
                 <div class="col-xs-8"><?php echo esc($dis->description) ?></div>
-                <div class="col-xs-4 text-right"><?php echo $configData['currency_value'] .' '.number_format($dis->amount / 100, 2, '.', '') ?></div>
+                <div class="col-xs-4 text-right"> &#45; <?php echo $configData['currency_value'] .' '.number_format($dis->amount / 100, 2, '.', '') ?></div>
             </div>
         </li>
     <?php
@@ -97,12 +84,13 @@ if ($subscription->status == "future") {
 
 <div class="text-right">
     <span class="text-muted">
-		<?php 
-        $phrase = $infoconfigData['Timeline']['Recurring_charge'];
-        $default = array('$planperiod', '$planunit');
-        $assign   = array($currentPlanDetails->period, $currentPlanDetails->periodUnit);
-        echo str_replace($default,  $assign, $phrase); ?> </span>
+			<?php echo InfoNAlerts::timeLineSubscriptionRecurringInfoMsg($servicePortal) ?>  
+	</span>
     <span class="cb-subscribed-total">
-		<?php echo $configData['currency_value'] .' '.number_format( $estimate->amount / 100, 2, '.', '')  ?>
+		<?php if(isset($invoiceEstimate)) { ?>
+			<?php echo $configData['currency_value'] .' '.number_format( $invoiceEstimate->total / 100, 2, '.', '') ?>
+		<?php } else {
+			echo $configData['currency_value'] .' '. number_format( 0 / 100, 2, '.', '');
+		} ?>
 	</span>
 </div>

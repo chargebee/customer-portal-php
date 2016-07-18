@@ -5,7 +5,7 @@
             	<div class="media text-left">
                         <span class="glyphicon glyphicon-info-sign pull-left"></span>
                         <div class="media-body">
-                            <?php echo $infoconfigData['Billing_Information']['No_billing_address_present']; ?>
+                            <?php echo  InfoNAlerts::billingAddressInfoMsg($servicePortal) ?>
                         </div>
                  </div>
                </div>

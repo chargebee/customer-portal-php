@@ -55,7 +55,7 @@ function AjaxCallMessage(url, type, dataType, data, page) {
 					$('span[id="' + error.error_param +'"]').show();
 					msg = response.error_msg;
 				} else {
-	            	msg = response.error_msg;
+	            	msg = error.error_msg;
 				}
 			}catch(e) {
 				msg = "Sorry, something went wrong while processing your request.";	
@@ -81,5 +81,24 @@ $(document).ready(function(){
 	    var params = {lastInvoiceNo:lastInvoiceNo, offset:offset};
 	    AjaxCall('nextInvoiceDetails.php', 'POST', params, '#invoiceTableShow', '#spinner');
 	});
+	
+	$(window).bind("load resize scroll", function () {
+	    var $footer = $("#sticky-footer");
+	    var footerHeight = $footer.outerHeight();
+	    if (($(document.body).height() + footerHeight) <= $(window).height()) {
+	        $footer.css({
+	            position: "fixed",
+	            width: "100%",
+	            bottom: 0
+	        });
+	    } else {
+	        $footer.css({
+	            position: "static",
+	            width: "auto"
+	        });
+	    }
+	});
 })
+
+
 

@@ -1,11 +1,5 @@
 <?php   
-if($customer->autoCollection == "on" && $customer->cardStatus == "no_card") {
-     $paymentMessage = $infoconfigData['Payment_Mode']['Autocolletion_On_Nocard'];
-} elseif ($customer->autoCollection == "on") {
-	$paymentMessage = $infoconfigData['Payment_Mode']['Autocolletion_On'];
-} elseif ($customer->autoCollection == "off") {
-	$paymentMessage = $infoconfigData['Payment_Mode']['Offline_payment'];
-}
+$paymentModeMsg  = InfoNAlerts::paymentModeMsg($servicePortal);
 ?>
                 
 <div class="form-horizontal">
@@ -14,7 +8,7 @@ if($customer->autoCollection == "on" && $customer->cardStatus == "no_card") {
         	<div class="media text-left">
             	<span class="glyphicon glyphicon-info-sign pull-left"></span>
                 	<div class="media-body">
-                    	<?php echo $paymentMessage ?>
+                    	<?php echo $paymentModeMsg ?>
                     </div>
             </div>
         </div>

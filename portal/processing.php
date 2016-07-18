@@ -2,17 +2,17 @@
 $successFlashMsg = ""; 
 if ($successMessage == 'true') { 
  	 if ($_GET['page'] == 'editaddress') { 
-       $successFlashMsg = $infoconfigData['address']['success'];
+       $successFlashMsg = "Billing Address Updated Successfully";
      } elseif ($_GET['page'] == 'editaccount') { 
-		$successFlashMsg =  $infoconfigData['account']['success'];
+		$successFlashMsg =  "Account Information Updated Successfully";
      } elseif ($_GET['page'] == 'editshipping') {
-         $successFlashMsg = $infoconfigData['shipping']['success'];
+         $successFlashMsg = "Shipping Address Updated Successfully";
      } elseif ($_GET['page'] == 'editsubscription') { 
-       $successFlashMsg = $infoconfigData['subscription']['success'];
+       $successFlashMsg = "Subscription Updated Successfully";
      } elseif ($_GET['page'] == 'cancelsubscription') { 
-		$successFlashMsg = $infoconfigData['cansubscription']['success'];
+		$successFlashMsg = "Subscription Cancelled Successfully";
 	 } elseif ($_GET['page'] == 'index') { 
-        $successFlashMsg = $infoconfigData['reactivatesubscription']['success'];
+        $successFlashMsg = "Subscription Reactivated Successfully";
 	 }
 }	 
 ?>

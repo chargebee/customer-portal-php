@@ -26,7 +26,7 @@ $customerInvoice = $servicePortal->retrieveInvoice();
                 <div id="cb-portal-payment-mode-title" class="page-header clearfix">
                     <span class="h3">Payment Mode</span>
                 </div>
-				<?php include("paymentmode.php") ?>
+				<?php include("paymentMode.php") ?>
             </div>
 			
             <div id="cb-portal-payment-info" class="cb-well">
@@ -70,7 +70,7 @@ $customerInvoice = $servicePortal->retrieveInvoice();
                         <div class="media text-left">
                             <span class="glyphicon glyphicon-info-sign pull-left"></span>
                             <div class="media-body">
-                                <?php echo $infoconfigData['Customer_Invoices']['Invoice_list_is_empty']; ?>
+                                <?php echo  InfoNAlerts::invoiceNotPresentInfoMsg($servicePortal) ?>
                             </div>
                         </div>
                     </div>
@@ -95,7 +95,6 @@ $customerInvoice = $servicePortal->retrieveInvoice();
                                 <span class='glyphicon glyphicon-pencil'></span>Edit
                             </a>
                     <?php
-                        $showEditDisplay = false;
                     }                    
                 }               
 ?>
@@ -125,63 +124,46 @@ $customerInvoice = $servicePortal->retrieveInvoice();
             </span>
         </div>
         <p class="text-muted">
-            <?php 
-            $phrase = $infoconfigData['Timeline']['Recurring_charge'];
-            $default = array('$planperiod', '$planunit');
-            $assign   = array($currentPlanDetails->period, $currentPlanDetails->periodUnit);
-            echo str_replace($default,  $assign, $phrase); ?> </p>
+			<?php echo InfoNAlerts::timeLineSubscriptionRecurringInfoMsg($servicePortal) ?> 
+	     </p>
             <?php if(isset($subscription->currentTermStart)){ ?>
                 <p class="text-muted">
-                    <?php 
-                    $phrase = $infoconfigData['Timeline']['Current_term'];
-                    $default = array('$subscription.current_term_start', '$subscription.current_term_end');
-                    $assign   = array(date('d-M-y', $subscription->currentTermStart), date('d-M-y', $subscription->currentTermEnd));
-                    echo str_replace($default,  $assign, $phrase);
-
-                 ?> 
+                    <?php  echo InfoNAlerts::timeLineSubscriptionCurrentTermEndInfoMsg($servicePortal); ?> 
                 </p> 
             <?php } ?>
 			
-     <?php if ($subscription->status == "in_trial") {  ?>
+        <?php if ($subscription->status == "in_trial") {  ?>
             <p class="text-muted">
-                <?php echo str_replace('$subscription.trial_end', date('d-M-y', $subscription->trialEnd),
-											$infoconfigData['Timeline']['Trial_ends_on']); ?> </p>
-            <?php } else if ($subscription->status == "cancelled") { ?>  
+                <?php echo  InfoNAlerts::timeLineSubscriptionTrialEndInfoMsg($servicePortal) ?> </p>
                 <p class="text-muted">
-					<?php echo str_replace('$subscription.cancelled_at', date('d-M-y', $subscription->cancelledAt),
-													$infoconfigData['Timeline']['Canceled_date']); ?> 
-				</p> 
+            		<?php echo InfoNAlerts::timeLineSubscriptionTrialStartMsg($servicePortal); ?> 
+				</p>
+         <?php } else if ($subscription->status == "cancelled") { ?>  
                 <p class="text-muted">
-            		<?php echo str_replace('$subscription.trial_start', date('d-M-y', $subscription->trialStart),
-							 							$infoconfigData['Timeline']['Trial_started_on']); ?> 
+					<?php echo InfoNAlerts::timeLineSubscriptionCancelledInfoMsg($servicePortal) ?> 
 				</p> 
         <?php } else if ($subscription->status == "active") { ?>   
             	<p class="text-muted">
-                	<?php echo str_replace('$subscription.current_term_end', date('d-M-y', $subscription->currentTermEnd),
-											$infoconfigData['Timeline']['Next_billing_date']); ?> 
-				</p>
-            	<p class="text-muted">Your current billing term is 
-					<?php echo date('d-M-y', $subscription->currentTermStart) ?> and 
-                	<?php echo date('d-M-y', $subscription->currentTermEnd) ?>. 
+                	<?php echo InfoNAlerts::timeLineSubscriptionNextBillingInfoMsg($servicePortal) ?> 
 				</p>
             	<p class="text-muted">
-                	<?php echo str_replace('$subscription.activated_at', date('d-M-y', $subscription->activatedAt),
-								$infoconfigData['Timeline']['Activation_date']); ?> 
+                	<?php echo InfoNAlerts::timeLineSubscriptionActivatedAtInfoMsg($servicePortal) ?> 
 				</p>
        <?php } else if ($subscription->status == "non_renewing") { ?>
             	<p class="text-muted">
-                	<?php echo str_replace('$subscription.cancelled_at', date('d-M-y', $subscription->currentTermEnd),
-											$infoconfigData['Non_Renewing_Subscriptions']['Will_be_canceled']); ?> 
+                	<?php echo InfoNAlerts::timeLineSubscriptionNonRenewingInfoMsg($servicePortal) ?> 
 				</p>
-            	<p class="text-muted"><?php echo str_replace('$subscription.activated_at', date('d-M-y', $subscription->activatedAt),
-								$infoconfigData['Timeline']['Activation_date']); ?> </p>
-        <?php }  ?>
+            	<p class="text-muted">
+					<?php echo InfoNAlerts::timeLineSubscriptionActivatedAtInfoMsg($servicePortal) ?> 
+				</p>
+        <?php } ?>
+		
         <p class="text-muted">
-            <?php echo str_replace('$subscription.created_at', date('d-M-y', $subscription->createdAt),
-								$infoconfigData['Timeline']['Signed_up_on']); ?> 
+            <?php echo InfoNAlerts::timeLineSubscriptionCreatedAtInfoMsg($servicePortal); ?> 
 		</p>
         <hr class="clearfix">
-        <div class="text-right">
+        
+		<div class="text-right">
 			<?php if($subscription->status == "cancelled") {?>
 				<?php if($settingconfigData["reactivatesubscription"]["allow"] == 'true') {?>
 					<a class="text-danger" data-cb-jshook="link-cancel-subscription" 

@@ -8,10 +8,12 @@ class ServicePortal {
 
     private $sessionSubscriptionId = null;
     private $subscriptionDetails = null;
+	private $planDetails = null;
 
     public function __construct($subscriptionId) {
         $this->sessionSubscriptionId = $subscriptionId;
         $this->subscriptionDetails = $this->retrieveSubscription($this->sessionSubscriptionId);
+		$this->planDetails = $this->retrievePlan($this->subscriptionDetails->subscription()->planId);
     }
 
     /*
@@ -22,7 +24,7 @@ class ServicePortal {
         return $result;
     }
 	
-
+	
     /*
      * Retrieves plan information from Chargebee.
      */
@@ -30,6 +32,7 @@ class ServicePortal {
         $planResult = ChargeBee_Plan::retrieve($planId);
         return $planResult->plan();
     }
+	
 
     /*
      * Retrieves all available plans from Chargebee.
@@ -63,20 +66,49 @@ class ServicePortal {
         return $addons;
     }
 	
-    /*
-     * Retrieves estimates of a subscription from Chargebee.
-     */
-    public function retrieveEstimate() {
+	/**
+	 * Estimation of Subscription change returned based on the inputs passed. 
+	 */
+	public function changeSubscriptionEstimate($planId, $planQuantity, $addons, $replaceAddonList, $endOfTerm) {
+		$subParams = array("id" => $this->getSubscription()->id);
+		if(isset($planId) ){
+			$subParams["planId"] = $planId;
+			$subParams["planQuantity"] = $planQuantity;
+		}
+		$params = array("subscription" => $subParams);
+		if(isset($addons)) {
+			$params["addons"] = $addons;
+		}
+		if(isset($replaceAddonList)){
+			$params["replaceAddonList"] = $replaceAddonList;
+		}
+		if(isset($endOfTerm)) {
+			$params["endOfTerm"] = $endOfTerm;
+		}
 		$subscription = $this->subscriptionDetails->subscription();
-        $estimateParams = array("subscription" => array("id" => $subscription->id,
-														"planId" => $subscription->planId,
-														"planQuantity" => $subscription->planQuantity));
-        $estimate = ChargeBee_Estimate::updateSubscription($estimateParams)->estimate();
-        return $estimate;
-    }
+		$result = ChargeBee_Estimate::updateSubscription($params);
+		return $result->estimate();
+	}
+	
+	/**
+	 * Returns only the line items of the passed entity type(plan, addon)
+	 */
+	public function getLineItems($invoiceEstimate, $entityType) {
+	   $items = array();
+	   if(!(isset($invoiceEstimate) && isset($invoiceEstimate->lineItems))) {
+		   return $items;
+	   }
+ 	   foreach ($invoiceEstimate->lineItems as $li) {
+ 		  if($li->entityType ==  $entityType) {
+			array_push($items, $li);
+		  }
+	   }
+	   return $items;
+	}
 
     /**
-	 * Retrieves only 5 invoices from Chargebee. If offset is passed, then the invoices from the offset will be returned.
+	 * Retrieves only 5 invoices from Chargebee. If offset is passed, then the 
+	 * invoices from the offset will be returned.
 	 */
     function retrieveInvoice($offset=null) {
         $inputParams = array("limit" => 5 );
@@ -89,7 +121,7 @@ class ServicePortal {
     /*
      * Updates the customer details in Chargebee.
      */
-    function updateAccountInfo($params) {
+    function updateAccountInfo() {
         try {
             $result = ChargeBee_Customer::update($this->getCustomer()->id, 
 					array("firstName" => $_POST['first_name'],
@@ -110,13 +142,12 @@ class ServicePortal {
     /*
      * Updates the billing information of customer in Chargebee.
      */
-    function updateBillingAddress($params) {
+    function updateBillingAddress() {
         try {
             $result = ChargeBee_Customer::updateBillingInfo($this->getCustomer()->id, 
 									array("billingAddress" => $_POST["billing_address"]));
 						            $response["status"] = "success";
 									$response["forward"] = getReturnURL();
-						            return json_encode($response);
             $response["status"] = "success";
 			$response["forward"] = getReturnURL();
             return json_encode($response);						
@@ -130,7 +161,7 @@ class ServicePortal {
     /*
      * Updates the shipping address of the subscription in Chargebee.
      */
-    function updateShippingAddress($post) {
+    function updateShippingAddress() {
         try {
             $result = ChargeBee_Subscription::update($this->getSubscription()->id, 
 								array("shippingAddress" => $_POST["shipping_address"]));
@@ -147,14 +178,16 @@ class ServicePortal {
     /*
      * Updates the subcription in Chargebee.
      */
-    function updateSubscription($params) {
+    function updateSubscription() {
         try {
+            global $settingconfigData;
+            $endOfTerm = $settingconfigData["subscription"]["immediately"] == "false";
             $result = ChargeBee_Subscription::update($this->getSubscription()->id, array(
-                "planId" => $_POST['planId'],
-                "planQuantity" => $_POST['planQuantity'],
-                "endOfTerm" => $settingconfigData["subscription"]["immediately"],
-                "replaceAddonList" => true,
-                "addons" => $_POST['addons']
+                "planId" => $_POST['plan_id'],
+                "planQuantity" => $_POST['plan_quantity'],
+                "endOfTerm" => $endOfTerm,
+                "replaceAddonList" => $_POST["replace_addon_list"],
+                "addons" => isset($_POST['addons']) ? $_POST["addons"] : array()
             ));
             $response["status"] = "success";
 			$response["forward"] = getReturnURL();
@@ -171,7 +204,7 @@ class ServicePortal {
     /*
      * Reactivates the subscription from "cancel" to "active" state.
      */
-    function subscriptionReactivate($params) {
+    function subscriptionReactivate() {
         try {            
             $result = ChargeBee_Subscription::reactivate($this->getSubscription()->id);
             $response["status"] = "success";
@@ -189,7 +222,7 @@ class ServicePortal {
     /*
      * Cancels the subscription in Chargebee.
      */
-    function subscriptionCancel($params) {
+    function subscriptionCancel() {
         try {
             $result = ChargeBee_Subscription::cancel($this->getSubscription()->id, 
                 array("endOfTerm" => $_POST['endOfTerm']));
@@ -214,7 +247,7 @@ class ServicePortal {
      * Gets the subscription's addon details.
      */
     function getAddon() {
-        return $this->getSubscription()->addons;
+        return isset($this->getSubscription()->addons) ? $this->getSubscription()->addons : array();
     }
 
     /*
@@ -229,6 +262,13 @@ class ServicePortal {
      */
     function getSubscription(){
         return $this->subscriptionDetails->subscription();
+    }
+	
+    /*
+     * Returns the subscription's Chargebee Plan Object.
+     */
+    public function getPlan() {
+        return $this->planDetails;
     }
     
     /*
@@ -246,7 +286,10 @@ class ServicePortal {
 		
         $allPlans = $this->retrieveAllPlans();
 		$planChange = $this->planAccessible($allPlans, $settingconfigData);
-		
+		if($planChange) {
+			// if plan change is allowed then showing the edit subscription option.
+			return true;
+		}
         $allAddons = $this->retrieveAllAddons(); 
         $addonChange = $this->addonAccessible($allAddons, $settingconfigData);
 	
@@ -277,17 +320,24 @@ class ServicePortal {
 				$planChange = true;					
 			}	
 		}
-		if(sizeof($activePlans) == 1 && $currentPlanDetails->status != "archived" &&
-						$settingconfigData["changesubscription"]["planqty"] == 'false') {
-			$planChange = false;
+		if(sizeof($activePlans) == 1 && $currentPlanDetails->status != "archived" ) {
+			$planChange = true;
+			if($currentPlanDetails->chargeModel == "flat_fee" || 
+					$settingconfigData["changesubscription"]["planqty"] == 'false') {
+				$planChange = false;
+			} 
 		}
 		return $planChange;
 	}
+	
 	public function addonAccessible($allAddons, $settingconfigData) {
 		$curAddons = $this->getAddon();
         $activeAddons = array();
         $archivedAddons = array();
         foreach ($allAddons as $a) {
+			if($a->addon()->chargeType == "non_recurring" || !$this->addonIsApplicableToPlan($this->getPlan(), $a->addon())) {
+				continue;
+			}
             if($a->addon()->status == 'active'){
                 $activeAddons[] = $a->addon()->id;        
             }          
@@ -295,8 +345,7 @@ class ServicePortal {
             if($a->addon()->status == 'archived'){
                 $archivedAddons[] = $a->addon()->id;
             }
-        }
-		
+        }	
 		$addonChange = true;
 		if($settingconfigData["changesubscription"]["addon"] == 'false'){
 			$addonChange = false;
@@ -311,6 +360,45 @@ class ServicePortal {
 			} 
 		}
 		return $addonChange;
+	}
+	
+	/**
+	 * Check the addon is applicable to the plan during change subscription
+	 */
+	function addonIsApplicableToPlan($plan, $addon){
+		$planPeriod = $plan->period;
+		$planPeriodUnit = $plan->periodUnit;
+		if($planPeriodUnit == "year") {
+			$planPeriodUnit = "month";
+			$planPeriod = $planPeriod * 12;
+		}
+		
+		$addonPeriod = $addon->period;
+		$addonPeriodUnit = $addon->periodUnit;
+		if($addonPeriodUnit == "year") {
+			$addonPeriodUnit = "month";
+			$addonPeriod = $addonPeriod * 12;
+		}
+		if($planPeriodUnit == "week") {
+			return $addonPeriodUnit == "week" && ($planPeriod % $addonPeriod == 0);
+		} else if($planPeriodUnit == "month") {
+			return $addonPeriodUnit == "month" && ($planPeriod % $addonPeriod == 0);
+		} else {
+			throw new RuntimeException("Not handled plan period");
+		}
+	}
+	
+	
+	/**
+	 *Check if the passed addons is the current subscription addon
+	 */
+	function isCurrentSubscriptionAddon($addon){
+		foreach($this->getAddon() as $currentAddon) {
+			if($addon->id == $currentAddon->id){
+				return true;
+			}
+		}
+		return false;
 	}
 
     /*

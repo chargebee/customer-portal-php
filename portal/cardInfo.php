@@ -22,15 +22,7 @@
 
 <?php
 $card = $servicePortal->getCard();
-$currentYear = date('Y');
-$currentMonth = date('n');
-if (!isset($customer->paymentMethod)) { 
-	$cardInfoMsg = $infoconfigData['Payment_Related']['No_card_details'];
-} else if( $currentYear > $card->expiryYear || ($card->expiryYear == $currentYear && $currentMonth  > $card->expiryMonth ) ) {
-	$cardInfoMsg = $infoconfigData['Payment_Related']['Card_expired'];
-} else if( $card->expiryYear == $currentYear && $card->expiryMonth == $currentMonth ) {
-	$cardInfoMsg = $infoconfigData['Payment_Related']['Card_expiring'];
-}
+$cardInfoMsg = InfoNAlerts::paymentInfoMsg($servicePortal);
 ?>
 
 <?php if (!is_null($cardInfoMsg)) { ?>

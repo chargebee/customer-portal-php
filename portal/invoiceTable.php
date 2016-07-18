@@ -13,7 +13,7 @@
         foreach ($customerInvoice as $entry) {
             
             $invoice = $entry->invoice();
-            $amount = $invoice->amount;
+            $amount = $invoice->total;
             if ($invoice->status == "pending") {
                 continue;
             }
@@ -33,7 +33,7 @@
                     <?php } ?>
                 </td>
                 <td data-cb-invoice="Date">
-                    <?php echo date('d-M-y', $invoice->paidOn) ?>
+                    <?php echo date('d-M-y', $invoice->paidAt) ?>
                 </td>
                 <td data-cb-invoice="Invoice Number">
                     <?php echo $invoice->id ?>
@@ -43,7 +43,7 @@
                 </td>
                 <td class="text-muted">
                     <span class="cb-portal-invoice-desc">
-						Paid on <?php echo date('d-M-y', $invoice->endDate) ?>
+						Paid on <?php echo date('d-M-y', $invoice->date) ?>
 					</span>
                 </td>
                 <td class="text-right">
