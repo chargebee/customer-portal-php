@@ -143,4 +143,5 @@ static function subscriptionChangeEndOfTermInfoMsg($servicePortal, $estimate, $c
 }
 
 }	
+
 ?>
