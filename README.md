@@ -9,6 +9,8 @@
 * [Configuration](#configuration)
 * [How to get started?](#how-to-get-started)
 * [Feature wishlist and how to implement](#feature-wishlist-and-how-to-implement)
+* [Handle Portal Signup Emails](#handle-portal-signup-emails)
+* [Support and contribution](#support-and-contribution)
 * [License](#license)
 
 ## Introduction
@@ -194,6 +196,34 @@ Cancelled: Hide the option.
 Subscription pause will not affect the Active subscription count and the MRR reports. 
 
 Once the “Pause Subscription” feature is implemented, if you’d like to take an export of Active subscriptions alone, you’d have to use an additional filter criteria to ensure that the subscriptions with the custom field value “Paused” are excluded. 
+
+
+###Handle Portal Signup Emails
+
+Right now, the {{customer_portal.signup_url}} mergevar (under email notifications) will redirect your customers to Chargebee's portal. If you're using the open source portal, to ensure that the customers are redirected to the open source portal page, the following actions are required.
+
+1. Customer clicks on the sign up link directly from the portal login page (as shown below).
+ 
+  ![Portal Signup ui](screenshot-2.png)
+
+ In this case, the url should have the return url of the open source portal configured in it. The customer will then receive an email with the portal sign up link. Once the password is entered, customer will be redirected to the open source portal page.
+
+2. Customer accesses the sign up link from one of the email notifications (For example, 'Subscription Created'). 
+
+ If you'd like customers to be redirected to the open source portal page, you could replace the url for the particular email notification as shown below:
+
+**Customer_portal.signup_url:** https://honeycomics-test.chargebeeportal.com/portal/login?email={{customer.email}}#cb-portal-signup
+
+**Open_source.signup_url:** https://honeycomics-test.chargebeeportal.com/portal/login?email={{customer.email}}&return_url=http://www.honeycomics.com#cb-portal-signup
+
+The same goes for the {{customer_portal.login_url}} as well.
+
+
+###Support and contribution
+
+If you’ve added new functionalities that you think might be helpful for all, do send us a [pull request](https://github.com/chargebee/customer-portal-php/pulls). For feature requests or feedback, submit [here](https://github.com/chargebee/customer-portal-php/issues/new). 
+
+If you’d like us to guide you through the set up process or if you have any questions regarding the portal implementation, please contact us at support@chargebee.com.
 
 
 ## License

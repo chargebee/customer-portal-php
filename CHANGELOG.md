@@ -1,3 +1,9 @@
+##v1.2.2 (2016-09-29)
+* * *
+
+Bug fix when showing invoice date
+
+
 ###v1.2.1 (2016-07-19)
 * * *
 

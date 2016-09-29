@@ -33,7 +33,7 @@
                     <?php } ?>
                 </td>
                 <td data-cb-invoice="Date">
-                    <?php echo date('d-M-y', $invoice->paidAt) ?>
+                    <?php echo date('d-M-y', $invoice->date) ?>
                 </td>
                 <td data-cb-invoice="Invoice Number">
                     <?php echo $invoice->id ?>
@@ -43,8 +43,10 @@
                 </td>
                 <td class="text-muted">
                     <span class="cb-portal-invoice-desc">
-						Paid on <?php echo date('d-M-y', $invoice->date) ?>
-					</span>
+                          <?php if($invoice->status == "paid") {?>                    
+						Paid on <?php echo date('d-M-y', $invoice->paidAt) ?>
+                          <?php } ?>
+		    </span>
                 </td>
                 <td class="text-right">
                      <?php if ($settingconfigData["invoice"]["download"] == 'true') { 
