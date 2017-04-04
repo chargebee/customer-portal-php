@@ -198,7 +198,7 @@ Subscription pause will not affect the Active subscription count and the MRR rep
 Once the “Pause Subscription” feature is implemented, if you’d like to take an export of Active subscriptions alone, you’d have to use an additional filter criteria to ensure that the subscriptions with the custom field value “Paused” are excluded. 
 
 
-###Handle Portal Signup Emails
+### Handle Portal Signup Emails
 
 Right now, the {{customer_portal.signup_url}} mergevar (under email notifications) will redirect your customers to Chargebee's portal. If you're using the open source portal, to ensure that the customers are redirected to the open source portal page, the following actions are required.
 
@@ -219,7 +219,7 @@ Right now, the {{customer_portal.signup_url}} mergevar (under email notification
 The same goes for the {{customer_portal.login_url}} as well.
 
 
-###Support and contribution
+### Support and contribution
 
 If you’ve added new functionalities that you think might be helpful for all, do send us a [pull request](https://github.com/chargebee/customer-portal-php/pulls). For feature requests or feedback, submit [here](https://github.com/chargebee/customer-portal-php/issues/new). 
 
